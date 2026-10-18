@@ -1,0 +1,57 @@
+---
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+const { adsEnabled, cfAnalyticsToken } = site.env;
+---
+
+<!--
+  "Cookie settings" opens the consent management platform (CMP) when one is installed
+  (e.g. Google Privacy & messaging, which is a Google-certified TCF CMP). Until then it
+  opens this dialog, which describes what the site actually does today.
+-->
+<dialog
+  id="cookie-settings"
+  class="m-auto w-[min(32rem,calc(100%-2rem))] rounded-xl border border-line bg-bg p-0 text-fg backdrop:bg-black/50"
+  aria-labelledby="cookie-settings-title"
+>
+  <div class="p-6">
+    <h2 id="cookie-settings-title" class="text-xl font-bold">Cookie settings</h2>
+    {
+      adsEnabled ? (
+        <p class="mt-3">
+          This site shows ads from Google AdSense. By default we ask Google not to use cookies for personalised
+          advertising. A consent tool will let you change this choice where it applies.
+        </p>
+      ) : (
+        <p class="mt-3">
+          This site does not use cookies for advertising or tracking, so there is nothing to switch on or off.
+        </p>
+      )
+    }
+    <p class="mt-3">
+      {
+        cfAnalyticsToken
+          ? 'We count visits with Cloudflare Web Analytics, which does not use cookies.'
+          : 'We do not run any analytics.'
+      }
+      Your light or dark theme choice is saved in your browser's local storage only if you use the theme button.
+    </p>
+    <p class="mt-3">
+      Read the <a href="/privacy/">Privacy Policy</a> for details.
+    </p>
+    <form method="dialog" class="mt-6 flex justify-end">
+      <button class="btn btn-primary" type="submit">Close</button>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  import { openCookieSettings } from '../scripts/consent';
+  for (const btn of document.querySelectorAll('[data-cookie-settings]')) {
+    btn.addEventListener('click', openCookieSettings);
+  }
+</script>

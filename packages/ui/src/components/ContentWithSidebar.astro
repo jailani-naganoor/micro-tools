@@ -1,0 +1,30 @@
+---
+// Below-the-tool content. When ads are on, a desktop-only sidebar ad sits beside this
+// content (never beside the tool itself). When ads are off it is a single column.
+import AdSlot from './AdSlot.astro';
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+---
+
+{
+  site.env.adsEnabled ? (
+    <div class="container-page grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div class="prose">
+        <slot />
+      </div>
+      <div class="hidden lg:block">
+        <AdSlot site={site} placement="sidebar" class="mt-10" />
+      </div>
+    </div>
+  ) : (
+    <div class="container-page">
+      <div class="prose max-w-3xl">
+        <slot />
+      </div>
+    </div>
+  )
+}

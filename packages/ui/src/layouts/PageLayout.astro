@@ -1,0 +1,32 @@
+---
+// Inner pages (about, contact, legal, blog index): breadcrumb, H1 and prose body.
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import type { Crumb, SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  title: string;
+  description: string;
+  path: string;
+  heading: string;
+  crumbs: Crumb[];
+  ogType?: 'website' | 'article';
+  jsonLd?: object[];
+  noindex?: boolean;
+  prose?: boolean;
+}
+const { heading, crumbs, prose = true, ...rest } = Astro.props;
+---
+
+<BaseLayout {...rest} breadcrumbs={crumbs}>
+  <div class="container-page py-8">
+    <Breadcrumbs crumbs={crumbs} />
+    <slot name="before-heading" />
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{heading}</h1>
+    <slot name="after-heading" />
+    <div class:list={['mt-6 max-w-3xl', { prose }]}>
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

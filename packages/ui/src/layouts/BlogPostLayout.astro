@@ -1,0 +1,47 @@
+---
+import PageLayout from './PageLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { formatPostDate, type BlogPost } from '../lib/blog';
+import { articleLd } from '../lib/seo';
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  post: BlogPost;
+}
+const { site, post } = Astro.props;
+const { title, description, pubDate, updatedDate, draft } = post.data;
+const path = `/blog/${post.id}/`;
+---
+
+<PageLayout
+  site={site}
+  title={title}
+  description={description}
+  path={path}
+  heading={title}
+  ogType="article"
+  noindex={draft}
+  crumbs={[
+    { name: 'Blog', path: '/blog/' },
+    { name: title, path },
+  ]}
+  jsonLd={[articleLd(site, { title, description, path, pubDate, updatedDate })]}
+>
+  <p slot="after-heading" class="mt-2 text-sm text-muted">
+    {draft && <strong class="text-warn">Draft — not published. </strong>}
+    Published <time datetime={pubDate.toISOString().slice(0, 10)}>{formatPostDate(pubDate)}</time>
+    {
+      updatedDate && (
+        <>
+          · Updated <time datetime={updatedDate.toISOString().slice(0, 10)}>{formatPostDate(updatedDate)}</time>
+        </>
+      )
+    }
+  </p>
+  <article>
+    <slot />
+  </article>
+  <AdSlot site={site} placement="content" />
+  <p class="mt-10"><a href="/">← Back to the {site.name}</a></p>
+</PageLayout>

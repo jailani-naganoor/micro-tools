@@ -1,0 +1,51 @@
+---
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  lastUpdated: string;
+}
+const { site, lastUpdated } = Astro.props;
+---
+
+<p><strong>Last updated:</strong> {lastUpdated}</p>
+<p>
+  These terms apply to your use of {site.name} (“the site”), run by {site.publisher}. By using the site you agree to
+  them. If you do not agree, please do not use the site.
+</p>
+
+<h2>Using the site</h2>
+<p>
+  The site is free to use for personal and business purposes. Please do not misuse it — for example by trying to
+  disrupt it, overload it or access it in ways it was not designed for.
+</p>
+
+<h2>Results are for information only</h2>
+<slot name="disclaimer" />
+<p>
+  We work to keep the site accurate, but we provide it “as is”, without warranties of any kind. You are responsible
+  for checking results before relying on them for anything important.
+</p>
+
+<h2>Limitation of liability</h2>
+<p>
+  To the extent permitted by law, we are not liable for any loss or damage arising from your use of, or inability to
+  use, the site or its results. Nothing in these terms limits liability that cannot be limited by law.
+</p>
+
+<h2>Content and trademarks</h2>
+<p>
+  The site’s text, design and code belong to {site.publisher} or its licensors. Product names mentioned on the site
+  belong to their owners and are used only to describe compatibility.
+</p>
+
+<h2>Links to other sites</h2>
+<p>We are not responsible for the content or practices of websites we link to.</p>
+
+<h2>Changes</h2>
+<p>We may update these terms. The date at the top shows when they last changed.</p>
+
+<h2>Contact</h2>
+<p>
+  Questions about these terms: <a href={`mailto:${site.env.contactEmail}`}>{site.env.contactEmail}</a>.
+</p>

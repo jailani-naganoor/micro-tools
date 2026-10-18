@@ -1,0 +1,33 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+const email = site.env.contactEmail;
+---
+
+<PageLayout
+  site={site}
+  title={`Contact | ${site.name}`}
+  description={`How to contact the team behind the free ${site.name}: questions, bug reports and suggestions.`}
+  path="/contact/"
+  heading="Contact"
+  crumbs={[{ name: 'Contact', path: '/contact/' }]}
+>
+  <p>
+    Questions, bug reports and suggestions are welcome. Email us at <a href={`mailto:${email}`}>{email}</a> and we
+    will reply as soon as we can.
+  </p>
+  <p>If you are reporting a problem, it helps to include:</p>
+  <ul>
+    <li>what you were trying to do and what happened instead,</li>
+    <li>your browser and device (for example “Chrome on Windows 11” or “Safari on iPhone”),</li>
+    <slot />
+  </ul>
+  <p>
+    You can also ask other users for help on our <a href={site.env.communityUrl + '/'}>community site</a>.
+  </p>
+</PageLayout>

@@ -1,0 +1,25 @@
+---
+// Rendered only when PUBLIC_ADS_ENABLED=true and PUBLIC_ADSENSE_CLIENT is set.
+interface Props {
+  client: string;
+}
+const { client } = Astro.props;
+---
+
+<meta name="adsense-client" content={client} />
+<script>
+  import { setConsentDefaults } from '../scripts/consent';
+
+  // Consent Mode v2 defaults must be in place before the AdSense script loads.
+  setConsentDefaults();
+  const client = document.querySelector<HTMLMetaElement>('meta[name="adsense-client"]')?.content;
+  if (client) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
+    document.head.appendChild(s);
+    const queue = ((window as unknown as { adsbygoogle: object[] }).adsbygoogle ||= []);
+    document.querySelectorAll('ins.adsbygoogle').forEach(() => queue.push({}));
+  }
+</script>

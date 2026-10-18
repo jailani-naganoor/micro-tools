@@ -1,0 +1,39 @@
+---
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+const year = new Date().getFullYear();
+const links = [
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+  { href: '/privacy/', label: 'Privacy Policy' },
+  { href: '/terms/', label: 'Terms' },
+];
+---
+
+<footer class="mt-16 border-t border-line bg-surface">
+  <div class="container-page flex flex-col gap-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap gap-x-5 gap-y-2">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} class="text-fg">
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <button type="button" class="cursor-pointer text-fg underline underline-offset-2" data-cookie-settings>
+            Cookie settings
+          </button>
+        </li>
+      </ul>
+    </nav>
+    <p class="text-muted">© {year} {site.publisher}</p>
+  </div>
+</footer>

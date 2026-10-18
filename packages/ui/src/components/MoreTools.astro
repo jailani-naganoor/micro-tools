@@ -1,0 +1,21 @@
+---
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+---
+
+<section aria-labelledby="more-heading">
+  <h2 id="more-heading">More free tools</h2>
+  <ul>
+    <li>
+      <a href={site.sibling.url + '/'}>{site.sibling.name}</a> — {site.sibling.blurb}
+    </li>
+    <li>
+      <a href={site.env.communityUrl + '/'}>Community</a> — ask questions, suggest features and share tips with
+      other users.
+    </li>
+  </ul>
+</section>
