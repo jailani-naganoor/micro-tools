@@ -80,3 +80,15 @@ export async function jsonLdTypes(page: Page): Promise<string[]> {
   const blocks = await page.$$eval('script[type="application/ld+json"]', (els) => els.map((e) => e.textContent ?? ''));
   return blocks.map((b) => JSON.parse(b)['@type']);
 }
+
+/** Run axe-core against the page for WCAG 2.2 A/AA rules and fail on any violation. */
+export async function expectAccessible(page: Page, context?: string) {
+  const { default: AxeBuilder } = await import('@axe-core/playwright');
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  const summary = results.violations.map(
+    (v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).slice(0, 3).join(', ')}`,
+  );
+  expect(summary, `accessibility violations${context ? ` (${context})` : ''}`).toEqual([]);
+}

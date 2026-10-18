@@ -30,3 +30,12 @@ test('camera permission denied shows fix steps', async ({ page }) => {
   await expect(page.locator('#cam-problem [data-permission-help]')).toBeVisible();
   await expect(page.locator('#cam-status')).toHaveText('Camera not started.');
 });
+
+test('denied error box is accessible', async ({ page }) => {
+  const { expectAccessible } = await import('@micro/ui/testing/fixtures');
+  await page.goto('/#webcam');
+  await page.getByRole('button', { name: 'Start camera' }).click();
+  await expect(page.locator('#cam-problem')).toBeVisible();
+  await page.locator('#cam-problem summary').first().click();
+  await expectAccessible(page, 'denied');
+});
