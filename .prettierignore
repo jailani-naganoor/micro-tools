@@ -1,0 +1,6 @@
+dist
+.astro
+node_modules
+package-lock.json
+apps/working-days/src/data/holidays
+*.md
