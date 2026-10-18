@@ -34,6 +34,7 @@ export function classifyError(err: unknown): MediaProblem {
     case 'AbortError':
       return 'in-use';
     case 'TypeError':
+    case 'NotSupportedError':
       return 'unsupported';
     default:
       return 'unknown';

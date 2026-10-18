@@ -54,9 +54,11 @@ export function initScreen() {
     clearTimeout(hintTimer);
     overlay.hidden = true;
     document.body.style.overflow = '';
-    if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
     status.textContent = message;
-    startBtn.focus();
+    // Leaving fullscreen resets focus once the exit completes, so restore it afterwards.
+    const restoreFocus = () => requestAnimationFrame(() => startBtn.focus());
+    if (document.fullscreenElement) void document.exitFullscreen().then(restoreFocus, restoreFocus);
+    else restoreFocus();
   }
 
   function next() {
