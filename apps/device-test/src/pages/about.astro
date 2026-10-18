@@ -1,0 +1,36 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`About | ${site.name}`}
+  description="About the free online mic, webcam, keyboard and dead pixel tests: what they do and how they protect your privacy."
+  path="/about/"
+  heading="About Device Test"
+  crumbs={[{ name: 'About', path: '/about/' }]}
+>
+  <p>
+    Device Test is a free set of simple checks for the hardware you use every day: your microphone, webcam, keyboard
+    and screen. It is useful before a video call, after buying a new monitor or keyboard, or when something stops
+    working and you want to know whether the problem is the device or an app.
+  </p>
+  <h2>What it does</h2>
+  <ul>
+    <li><strong>Mic test:</strong> live input level, device picker and an optional 5-second recording you can play back.</li>
+    <li><strong>Webcam test:</strong> live preview, resolution and frame rate, mirror toggle and snapshots.</li>
+    <li><strong>Keyboard test:</strong> on-screen ANSI or ISO layout that lights up each key you press.</li>
+    <li><strong>Dead pixel test:</strong> full-screen solid colours to spot dead, stuck and hot pixels.</li>
+  </ul>
+  <h2>Privacy by design</h2>
+  <p>
+    All tests run in your browser. Audio and video never leave your device, there are no accounts, and the site’s
+    security settings block connections to other servers. See the <a href="/privacy/">Privacy Policy</a> for details.
+  </p>
+  <h2>Limits</h2>
+  <p>
+    A browser can only see what your operating system shares with it. These tests are a quick first check; they
+    can’t diagnose every hardware fault. If you find a problem, please <a href="/contact/">let us know</a>.
+  </p>
+</PageLayout>

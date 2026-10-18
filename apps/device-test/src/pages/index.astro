@@ -1,0 +1,110 @@
+---
+import BaseLayout from '@micro/ui/layouts/BaseLayout.astro';
+import AdSlot from '@micro/ui/components/AdSlot.astro';
+import ContentWithSidebar from '@micro/ui/components/ContentWithSidebar.astro';
+import Faq from '@micro/ui/components/Faq.astro';
+import MoreTools from '@micro/ui/components/MoreTools.astro';
+import { faqLd, webAppLd } from '@micro/ui/lib/seo';
+import DeviceTests from '../components/DeviceTests.astro';
+import { site } from '../site.config';
+
+const faq = [
+  {
+    q: 'Is my audio or video uploaded or recorded?',
+    a: 'No. The tests run entirely in your browser. Sound and video from your microphone and camera are processed on your device and never sent to a server. The optional 5-second recording and webcam snapshots stay in your browser unless you choose to save a snapshot to your own device.',
+  },
+  {
+    q: 'Why doesn’t my browser ask for permission?',
+    a: 'If you blocked access before, the browser remembers that choice and won’t ask again. Use the steps shown under the test to allow access for this site, then reload. Also check your system privacy settings (Windows: Settings › Privacy & security; macOS: System Settings › Privacy & Security).',
+  },
+  {
+    q: 'The mic test shows no sound. What should I check?',
+    a: 'Make sure the right microphone is selected in the list, that it isn’t muted by a hardware switch or a mute key, and that no other app is using it. Headsets can have a mute button on the cable or ear cup. Try another USB port for USB microphones.',
+  },
+  {
+    q: 'Why is my webcam resolution lower than advertised?',
+    a: 'The browser and camera agree on a resolution that both support. Choose a higher “Requested quality” to ask for more. USB hubs, older USB ports, low light and some camera drivers can also limit the resolution or frame rate.',
+  },
+  {
+    q: 'Why don’t some keys light up in the keyboard test?',
+    a: 'Fn is handled inside the keyboard and is never sent to the computer. Some system shortcuts, media keys and Print Screen may be captured by the operating system before the browser sees them. If an ordinary letter key never lights up, the key or keyboard may be faulty.',
+  },
+  {
+    q: 'What is the difference between ANSI and ISO keyboards?',
+    a: 'ANSI is the common US layout with a wide, single-row Enter key and a long left Shift. ISO, common in the UK and Europe, has a tall Enter key, a shorter left Shift and an extra key next to it. Choose the one that matches your keyboard so every key can be shown.',
+  },
+  {
+    q: 'How do I tell a dead pixel from a stuck pixel?',
+    a: 'A dead pixel stays black on every colour and is easiest to see on white. A stuck pixel stays one colour, such as red, green or blue, and is easiest to see on black. Wipe the screen first so dust isn’t mistaken for a faulty pixel.',
+  },
+  {
+    q: 'Does this work on phones and tablets?',
+    a: 'Yes, in current mobile browsers. Use the front or back camera from the camera list. On iPhone and iPad, full-screen mode may not be available for the dead pixel test, but the colours still fill the browser window — tap through all colours to finish.',
+  },
+];
+---
+
+<BaseLayout
+  site={site}
+  title="Mic Test, Webcam Test, Keyboard & Dead Pixel Test"
+  description="Free online mic test, webcam test, keyboard test and dead pixel test. Runs in your browser — audio and video never leave your device."
+  path="/"
+  jsonLd={[
+    webAppLd(site, {
+      category: 'UtilitiesApplication',
+      features: [
+        'Microphone test with live level meter and 5-second playback',
+        'Webcam test with resolution, frame rate, mirror and snapshot',
+        'Keyboard test with ANSI and ISO layouts',
+        'Full-screen dead pixel test',
+      ],
+    }),
+    faqLd(faq),
+  ]}
+>
+  <div class="container-page pt-6 pb-4 sm:pt-8">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Online Mic, Webcam, Keyboard &amp; Dead Pixel Test</h1>
+    <p class="mt-2 mb-5 max-w-3xl text-muted">
+      Check your microphone, camera, keyboard and screen in seconds. Everything runs in your browser — audio and video
+      never leave your device.
+    </p>
+    <DeviceTests />
+    <AdSlot site={site} placement="result" />
+  </div>
+
+  <ContentWithSidebar site={site}>
+    <section aria-labelledby="how-to">
+      <h2 id="how-to">How to use the device tests</h2>
+      <ol>
+        <li>Choose a tab: <strong>Mic test</strong>, <strong>Webcam test</strong>, <strong>Keyboard test</strong> or <strong>Dead pixel test</strong>. Each tab has its own link you can bookmark or share.</li>
+        <li>For the mic or webcam, press <strong>Start</strong> and allow access when your browser asks.</li>
+        <li>Pick a different microphone or camera from the list if you have more than one.</li>
+        <li>For the keyboard, press each key and watch it light up. Switch to ISO if your Enter key is tall.</li>
+        <li>For the screen, start the test and step through the colours, looking for pixels that don’t change.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="how-it-works">
+      <h2 id="how-it-works">How it works</h2>
+      <p>
+        The tests use features built into your browser. The microphone test reads the sound level with the Web Audio
+        API, and the webcam test shows the camera feed in a video element on this page. The 5-second recording is
+        stored in your browser’s memory, and snapshots are drawn onto a local canvas — nothing is uploaded.
+      </p>
+      <p>
+        The keyboard test listens for key events and identifies each physical key by its <code>code</code>, so it
+        works whatever language your keyboard is set to. The dead pixel test switches the whole screen to solid colours
+        using full-screen mode where your browser supports it.
+      </p>
+      <p>
+        The site’s security settings only allow this site to use your camera and microphone, and block connections to
+        other servers.
+      </p>
+    </section>
+
+    <AdSlot site={site} placement="content" />
+
+    <Faq items={faq} />
+    <MoreTools site={site} />
+  </ContentWithSidebar>
+</BaseLayout>
