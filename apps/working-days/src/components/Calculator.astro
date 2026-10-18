@@ -1,0 +1,248 @@
+---
+import { COUNTRIES } from '../lib/holidays';
+
+const weekdays = [
+  { value: 1, short: 'Mon', long: 'Monday' },
+  { value: 2, short: 'Tue', long: 'Tuesday' },
+  { value: 3, short: 'Wed', long: 'Wednesday' },
+  { value: 4, short: 'Thu', long: 'Thursday' },
+  { value: 5, short: 'Fri', long: 'Friday' },
+  { value: 6, short: 'Sat', long: 'Saturday' },
+  { value: 0, short: 'Sun', long: 'Sunday' },
+];
+---
+
+<form id="calc" class="calc-grid card" novalidate>
+  <div class="area-inputs space-y-5">
+    <fieldset>
+      <legend class="field-label">What do you want to do?</legend>
+      <div class="grid grid-cols-2 gap-1 rounded-lg border border-line bg-bg p-1">
+        <label class="mode-option">
+          <input type="radio" name="mode" value="between" class="sr-only" checked />
+          <span>Count days between dates</span>
+        </label>
+        <label class="mode-option">
+          <input type="radio" name="mode" value="add" class="sr-only" />
+          <span>Add or subtract days</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="start" class="field-label">Start date</label>
+        <input id="start" name="start" type="date" class="field" min="1900-01-01" max="2199-12-31" required />
+      </div>
+      <div data-mode="between">
+        <label for="end" class="field-label">End date</label>
+        <input id="end" name="end" type="date" class="field" min="1900-01-01" max="2199-12-31" required />
+      </div>
+      <div data-mode="add" hidden>
+        <label for="days" class="field-label">Working days</label>
+        <div class="flex gap-2">
+          <select id="op" name="op" class="field w-auto px-2" aria-label="Add or subtract">
+            <option value="add">+</option>
+            <option value="subtract">−</option>
+          </select>
+          <input id="days" name="days" type="number" inputmode="numeric" min="0" max="10000" step="1" class="field" />
+        </div>
+      </div>
+    </div>
+
+    <div data-mode="between" class="flex min-h-6 items-center">
+      <label class="flex items-center gap-2 text-sm">
+        <input id="inc" name="inc" type="checkbox" class="size-5 accent-accent" />
+        Include the end date in the count
+      </label>
+    </div>
+    <p data-mode="add" class="min-h-6 text-sm text-muted" hidden>The start date itself is not counted.</p>
+  </div>
+
+  <div class="area-settings space-y-5">
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="country" class="field-label">Public holidays</label>
+        <select id="country" name="country" class="field">
+          {COUNTRIES.map((c) => <option value={c.code}>{c.name}</option>)}
+          <option value="none">No public holidays</option>
+        </select>
+      </div>
+      <div>
+        <label for="region" class="field-label">State or region</label>
+        <select id="region" name="region" class="field" disabled>
+          <option value="">Whole country</option>
+        </select>
+      </div>
+    </div>
+
+    <fieldset>
+      <legend class="field-label">Weekend</legend>
+      <div class="flex flex-col gap-2">
+        <label for="weekend" class="sr-only">Weekend pattern</label>
+        <select id="weekend" name="weekend" class="field">
+          <option value="sat-sun">Saturday–Sunday</option>
+          <option value="fri-sat">Friday–Saturday</option>
+          <option value="sun">Sunday only</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div class="grid grid-cols-7 gap-1" role="group" aria-label="Weekend days (tick days that are not worked)">
+          {
+            weekdays.map((d) => (
+              <label class="day-toggle" title={d.long}>
+                <input type="checkbox" name="wd" value={d.value} class="sr-only" />
+                <span aria-hidden="true">{d.short}</span>
+                <span class="sr-only">{d.long} is a weekend day</span>
+              </label>
+            ))
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <details class="group rounded-lg border border-line bg-bg">
+      <summary class="flex min-h-11 cursor-pointer items-center justify-between px-3 text-sm font-semibold">
+        Custom days off <span id="off-count" class="font-normal text-muted"></span>
+      </summary>
+      <div class="space-y-3 border-t border-line p-3">
+        <p class="text-sm text-muted">Add company holidays, leave or other days that aren’t worked.</p>
+        <div class="flex gap-2">
+          <label for="off-date" class="sr-only">Day off date</label>
+          <input id="off-date" type="date" class="field" min="1900-01-01" max="2199-12-31" />
+          <button id="off-add" type="button" class="btn">Add</button>
+        </div>
+        <ul id="off-list" class="flex flex-wrap gap-2" aria-label="Custom days off"></ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="area-result flex flex-col gap-4">
+    <section
+      id="result"
+      class="flex min-h-[12.5rem] flex-col justify-center rounded-xl bg-accent-soft p-5"
+      aria-labelledby="result-label"
+    >
+      <h2 id="result-label" class="text-sm font-semibold text-muted">Result</h2>
+      <div id="result-live" aria-live="polite" aria-atomic="true">
+        <p id="result-main" class="mt-1 text-4xl leading-tight font-bold tracking-tight sm:text-5xl">–</p>
+        <p id="result-sub" class="mt-2 min-h-12 text-sm">
+          <noscript>This calculator needs JavaScript. Please enable it in your browser.</noscript>
+          <span class="js-loading">Loading calculator…</span>
+        </p>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="copy-result" type="button" class="btn btn-primary" disabled>Copy result</button>
+        <button id="copy-link" type="button" class="btn" disabled>Copy link</button>
+        <span id="copy-status" class="self-center text-sm" role="status"></span>
+      </div>
+    </section>
+
+    <dl id="breakdown" class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+      <div class="stat"><dt>Total days</dt><dd data-stat="total">–</dd></div>
+      <div class="stat"><dt>Weekend days</dt><dd data-stat="weekend">–</dd></div>
+      <div class="stat"><dt>Holidays &amp; days off</dt><dd data-stat="holidays">–</dd></div>
+      <div class="stat"><dt>Working days</dt><dd data-stat="working">–</dd></div>
+    </dl>
+  </div>
+
+  <div class="area-holidays">
+    <div>
+      <h3 class="mb-1 text-sm font-semibold" id="hol-heading">Public holidays in this period</h3>
+      <p class="mb-2 text-xs text-muted">Untick a holiday if you work that day.</p>
+      <ul
+        id="hol-list"
+        class="h-48 space-y-1 overflow-y-auto rounded-lg border border-line bg-bg p-2 text-sm"
+        aria-labelledby="hol-heading"
+        tabindex="0"
+      >
+      </ul>
+    </div>
+  </div>
+</form>
+
+<style>
+  .mode-option {
+    display: flex;
+    min-height: 2.75rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .mode-option:has(input:checked) {
+    background: var(--c-accent);
+    color: var(--c-accent-fg);
+  }
+  .mode-option:has(input:focus-visible),
+  .day-toggle:has(input:focus-visible) {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+  .calc-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-areas: 'inputs' 'result' 'settings' 'holidays';
+  }
+  @media (min-width: 64rem) {
+    .calc-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas: 'inputs result' 'settings result' 'settings holidays';
+      align-items: start;
+    }
+  }
+  .area-inputs {
+    grid-area: inputs;
+  }
+  .area-result {
+    grid-area: result;
+  }
+  .area-settings {
+    grid-area: settings;
+  }
+  .area-holidays {
+    grid-area: holidays;
+  }
+  .day-toggle {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 2.75rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--c-border);
+    border-radius: 0.5rem;
+    background: var(--c-bg);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .day-toggle:has(input:checked) {
+    background: var(--c-surface-2);
+    color: var(--c-muted);
+    text-decoration: line-through;
+  }
+  .stat {
+    border-radius: 0.5rem;
+    border: 1px solid var(--c-border);
+    background: var(--c-bg);
+    padding: 0.5rem 0.75rem;
+  }
+  .stat dt {
+    color: var(--c-muted);
+    font-size: 0.75rem;
+  }
+  .stat dd {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  import { initCalculator } from '../scripts/calculator';
+  initCalculator();
+</script>

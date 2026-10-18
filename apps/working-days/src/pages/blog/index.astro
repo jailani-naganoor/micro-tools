@@ -1,0 +1,13 @@
+---
+import BlogIndexPage from '@micro/ui/components/BlogIndexPage.astro';
+import { getPublishedPosts } from '@micro/ui/lib/blog';
+import { site } from '../../site.config';
+
+const posts = await getPublishedPosts(site.env.showDrafts);
+---
+
+<BlogIndexPage
+  site={site}
+  posts={posts}
+  description="Practical guides to business days, deadlines, weekends and public holidays around the world."
+/>

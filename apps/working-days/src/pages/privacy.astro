@@ -1,0 +1,28 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import PrivacyContent from '@micro/ui/components/PrivacyContent.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`Privacy Policy | ${site.name}`}
+  description="How the Working Days Calculator handles your data: calculations run in your browser, with no accounts and no tracking cookies."
+  path="/privacy/"
+  heading="Privacy Policy"
+  crumbs={[{ name: 'Privacy Policy', path: '/privacy/' }]}
+>
+  <PrivacyContent site={site} lastUpdated="18 October 2026">
+    <Fragment slot="tool">
+      <p>
+        All calculations happen in your browser. The dates, country, weekend and days off you choose are not sent to
+        us or stored on a server.
+      </p>
+      <p>
+        To make results shareable, your choices are written into the page address (the part after “?”). If you copy
+        or share that link, anyone who opens it will see the same inputs, and the address is sent to our host when the
+        page loads, as with any web address. Avoid putting anything private into a shared calculation.
+      </p>
+    </Fragment>
+  </PrivacyContent>
+</PageLayout>
