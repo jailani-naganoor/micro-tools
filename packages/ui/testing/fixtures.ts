@@ -92,3 +92,26 @@ export async function expectAccessible(page: Page, context?: string) {
   );
   expect(summary, `accessibility violations${context ? ` (${context})` : ''}`).toEqual([]);
 }
+
+/**
+ * Apply the headers from the generated dist/_headers "/*" block to every response, so
+ * tests run under the production CSP and Permissions-Policy (astro preview doesn't
+ * serve _headers). CSP violations show up as console errors and fail the test.
+ */
+export async function useProductionHeaders(page: Page, headersFile: string) {
+  const { readFileSync } = await import('node:fs');
+  const lines = readFileSync(headersFile, 'utf8').split('\n');
+  const start = lines.indexOf('/*');
+  const headers: Record<string, string> = {};
+  for (const line of lines.slice(start + 1)) {
+    if (!line.startsWith('  ')) break;
+    const i = line.indexOf(':');
+    headers[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+  }
+  expect(headers['Content-Security-Policy']).toBeTruthy();
+  await page.route('**/*', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({ response, headers: { ...response.headers(), ...headers } });
+  });
+  return headers;
+}
