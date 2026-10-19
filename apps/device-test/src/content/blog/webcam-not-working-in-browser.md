@@ -2,6 +2,7 @@
 title: "Webcam Not Working in Your Browser? How to Fix It"
 description: "Fix a webcam that won't work in Chrome, Edge, Firefox or Safari: site permissions, Windows and macOS camera privacy, HTTPS and apps using the camera."
 pubDate: 2026-10-18
+updatedDate: 2026-10-19
 draft: true
 ---
 
@@ -30,15 +31,27 @@ If you clicked "Block" by mistake in the past, the browser remembers that choice
 
 ### Mozilla Firefox
 
-1. Click the permissions icon in the address bar and clear any blocked camera permission.
+1. Click the permissions icon at the left of the address bar and click the **×** next to **Blocked** to clear it. Firefox will ask again when you reload.
 2. Or go to **Settings > Privacy & Security**, scroll to **Permissions**, and click **Settings** next to **Camera** to remove or change saved decisions.
 
 ### Safari (Mac)
 
-1. With the site open, choose **Safari > Settings for this Website** and set **Camera** to **Allow** or **Ask**.
+1. With the site open, choose **Safari > Settings for This Website** and set **Camera** to **Allow** or **Ask**.
 2. Or go to **Safari > Settings > Websites > Camera** to see every site.
 
-Menu names may differ slightly by version. After any change, reload the page.
+### Safari on iPhone or iPad
+
+1. Open the **Settings** app, then **Safari** (on recent versions, **Apps > Safari**).
+2. Under **Settings for Websites**, tap **Camera** and choose **Ask** or **Allow**.
+3. Return to Safari and reload the page.
+
+### Chrome on Android
+
+1. Tap the icon to the left of the address bar, then **Permissions**.
+2. Turn on **Camera**, then reload the page.
+3. To review all sites, open Chrome's menu, then **Settings > Site settings > Camera**.
+
+Menu names may differ slightly by version. After any change, reload the page. On a work or school device, your organisation may control these settings, so ask your IT team if you can't change them.
 
 ## Step 2: Check the operating system's camera privacy settings
 
@@ -57,13 +70,13 @@ You can also check that Windows sees the camera in **Settings > Bluetooth & devi
 
 1. Open **System Settings > Privacy & Security > Camera**.
 2. Turn on the switch next to your browser.
-3. Quit and reopen the browser so the change takes effect.
+3. If the browser was already open, quit and reopen it.
 
 If your browser is not in the list, it has not asked for access yet. Visit a site that uses the camera and the request should appear.
 
 ## Step 3: Close other apps using the camera
 
-On many systems, especially Windows, only one app can use a webcam at a time. If a video call app, the Camera app or recording software has the camera open, the browser may report that the camera is unavailable or in use.
+Often only one app can use a webcam at a time. If a video call app, the Camera app or recording software has the camera open, the browser may report that the camera is unavailable or in use.
 
 1. Close video call, streaming and camera apps.
 2. Close other browser tabs that might be using the camera.
@@ -73,7 +86,7 @@ On many systems, especially Windows, only one app can use a webcam at a time. If
 ## Step 4: Check the hardware
 
 - **Privacy shutter:** Many laptops and webcams have a small sliding cover over the lens. A closed shutter gives a black image even though everything else works.
-- **Camera key:** Some laptops have a keyboard key or switch that disables the camera. Check your laptop's manual.
+- **Camera key:** Some laptops have a keyboard key or switch that disables the camera, and some show a grey image or a lock icon when it is off. Check your laptop's manual.
 - **USB connection:** For external webcams, unplug and reconnect, or try another USB port directly on the computer instead of a hub.
 - **Drivers (Windows):** Right-click **Start**, open **Device Manager**, expand **Cameras**, and choose **Update driver**. If the camera shows a warning symbol, try **Uninstall device** and restart.
 
@@ -83,7 +96,7 @@ If you have more than one camera, such as a built-in camera and a USB webcam, th
 
 ## Test your camera
 
-Once you have made changes, you can confirm the browser can see your camera with the [webcam test](/#webcam) on our home page. The video stays on your device and is not uploaded.
+Once you have made changes, you can confirm the browser can see your camera with the [webcam test](/#webcam) on our home page. It shows a live preview, lets you pick a camera from a list, and reports the resolution and frame rate you are actually getting. If something goes wrong, it shows fix steps for your browser. The video stays on your device and is not uploaded, and snapshots are only saved if you choose to save them to your device.
 
 ## Still stuck?
 
