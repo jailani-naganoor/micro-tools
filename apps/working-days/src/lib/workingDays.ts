@@ -1,4 +1,4 @@
-import { formatISODate, parseISODate, weekday, type ISODate } from './dates';
+import { daysInMonth, formatISODate, parseISODate, weekday, type ISODate } from './dates';
 
 /** Returns the holiday names for a date, or undefined/empty if it is not a holiday. */
 export type HolidayLookup = (date: ISODate) => readonly string[] | undefined;
@@ -21,6 +21,7 @@ export interface CountResult {
   start: ISODate;
   end: ISODate;
   reversed: boolean;
+  includeStart: boolean;
   includeEnd: boolean;
   totalDays: number;
   weekendDays: number;
@@ -89,28 +90,32 @@ function classify(epochDay: number, weekend: Set<number>, rules: DayRules): DayK
 }
 
 /**
- * Count working days from `start` to `end`. The start date is always included;
- * the end date only when `includeEnd` is true. Reversed input is swapped.
+ * Count working days from `start` to `end`. The start date is included unless
+ * `includeStart` is false; the end date only when `includeEnd` is true. Reversed
+ * input is swapped. A single day (start = end) only counts when both are included.
  */
 export function countWorkingDays(
   startISO: ISODate,
   endISO: ISODate,
   includeEnd: boolean,
   rules: DayRules,
+  includeStart = true,
 ): CountResult {
   let start = requireDate(startISO, 'Start date');
   let end = requireDate(endISO, 'End date');
   const weekend = validateWeekend(rules.weekendDays);
   const reversed = end < start;
   if (reversed) [start, end] = [end, start];
+  const first = includeStart ? start : start + 1;
   const last = includeEnd ? end : end - 1;
 
   const result: CountResult = {
     start: formatISODate(start),
     end: formatISODate(end),
     reversed,
+    includeStart,
     includeEnd,
-    totalDays: Math.max(0, last - start + 1),
+    totalDays: Math.max(0, last - first + 1),
     weekendDays: 0,
     holidays: [],
     holidaysOnWeekend: [],
@@ -118,7 +123,7 @@ export function countWorkingDays(
     workingDays: 0,
   };
 
-  for (let day = start; day <= last; day++) {
+  for (let day = first; day <= last; day++) {
     const c = classify(day, weekend, rules);
     if (c.kind === 'weekend') {
       result.weekendDays++;
@@ -191,4 +196,44 @@ export function estimateCalendarSpan(days: number, weekendDays: readonly number[
 
 export function weekendFromPattern(pattern: WeekendPattern, custom: readonly number[]): number[] {
   return pattern === 'custom' ? [...new Set(custom)].sort() : [...WEEKEND_PATTERNS[pattern]];
+}
+
+export interface MonthSummary {
+  /** 1–12 */
+  month: number;
+  totalDays: number;
+  weekendDays: number;
+  /** Holidays and custom days off that fell on a working weekday. */
+  daysOff: number;
+  workingDays: number;
+}
+
+/** Working days in each month of a year (every day of each month counted). */
+export function monthlyBreakdown(year: number, rules: DayRules): MonthSummary[] {
+  const months: MonthSummary[] = [];
+  for (let month = 1; month <= 12; month++) {
+    const mm = String(month).padStart(2, '0');
+    const r = countWorkingDays(`${year}-${mm}-01`, `${year}-${mm}-${daysInMonth(year, month)}`, true, rules);
+    months.push({
+      month,
+      totalDays: r.totalDays,
+      weekendDays: r.weekendDays,
+      daysOff: r.holidays.length + r.daysOff.length,
+      workingDays: r.workingDays,
+    });
+  }
+  return months;
+}
+
+/** Plain-English explanation of how the start/end toggles affect a count. */
+export function countingNote(includeStart: boolean, includeEnd: boolean): string {
+  if (includeStart && includeEnd) return 'Both dates are counted: Mon to Fri, both dates included = 5 days.';
+  if (includeStart) return 'The start date is counted, the end date isn’t: Mon to Fri = 4 days (Mon–Thu).';
+  if (includeEnd) return 'The end date is counted, the start date isn’t: Mon to Fri = 4 days (Tue–Fri).';
+  return 'Neither date is counted, only the days in between: Mon to Fri = 3 days (Tue–Thu).';
+}
+
+/** Working days × hours per day, rounded to 2 decimal places. */
+export function workingHours(days: number, hoursPerDay: number): number {
+  return Math.round(days * hoursPerDay * 100) / 100;
 }

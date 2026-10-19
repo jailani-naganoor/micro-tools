@@ -10,11 +10,15 @@ import {
 } from '../../src/lib/dates';
 import {
   addWorkingDays,
+  countingNote,
   countWorkingDays,
   estimateCalendarSpan,
+  monthlyBreakdown,
   weekendFromPattern,
+  workingHours,
   type HolidayLookup,
 } from '../../src/lib/workingDays';
+import { parseHours, stateFromUrl, stateToQuery } from '../../src/scripts/calculator';
 import { loadCountry } from '../../src/lib/holidays';
 
 const SAT_SUN = [6, 0];
@@ -143,6 +147,128 @@ describe('countWorkingDays', () => {
     expect(() => countWorkingDays('2026-02-30', '2026-03-01', false, { weekendDays: SAT_SUN })).toThrow();
     expect(() => countWorkingDays('2026-01-01', '2026-03-01', false, { weekendDays: [0, 1, 2, 3, 4, 5, 6] })).toThrow();
     expect(() => countWorkingDays('2026-01-01', '2026-03-01', false, { weekendDays: [7] })).toThrow();
+  });
+});
+
+describe('include start / end date', () => {
+  // Mon 19 Oct to Fri 23 Oct 2026
+  const count = (incStart: boolean, incEnd: boolean) =>
+    countWorkingDays('2026-10-19', '2026-10-23', incEnd, { weekendDays: SAT_SUN }, incStart);
+
+  it('counts Mon to Fri as 5, 4, 4 or 3 days', () => {
+    expect(count(true, true).workingDays).toBe(5);
+    expect(count(true, false).workingDays).toBe(4);
+    expect(count(false, true).workingDays).toBe(4);
+    expect(count(false, false).workingDays).toBe(3);
+    expect(count(false, false).totalDays).toBe(3);
+    expect(count(false, true)).toMatchObject({ includeStart: false, includeEnd: true });
+  });
+
+  it('defaults to including the start date', () => {
+    expect(countWorkingDays('2026-10-19', '2026-10-23', false, { weekendDays: SAT_SUN }).workingDays).toBe(4);
+  });
+
+  it('excluding the start date skips a holiday on it', () => {
+    const holidays = lookup({ '2026-12-25': 'Christmas Day' });
+    const r = countWorkingDays('2026-12-25', '2026-12-31', true, { weekendDays: SAT_SUN, holidays }, false);
+    expect(r.holidays).toEqual([]);
+    expect(r.workingDays).toBe(4); // Mon 28 – Thu 31
+  });
+
+  it('a single day only counts when both dates are included', () => {
+    const one = (s: boolean, e: boolean) =>
+      countWorkingDays('2026-10-19', '2026-10-19', e, { weekendDays: SAT_SUN }, s).workingDays;
+    expect([one(true, true), one(true, false), one(false, true), one(false, false)]).toEqual([1, 0, 0, 0]);
+    // Adjacent days with neither included: nothing in between.
+    expect(countWorkingDays('2026-10-19', '2026-10-20', false, { weekendDays: SAT_SUN }, false).totalDays).toBe(0);
+  });
+
+  it('works with reversed dates', () => {
+    const r = countWorkingDays('2026-10-23', '2026-10-19', true, { weekendDays: SAT_SUN }, false);
+    expect(r).toMatchObject({ reversed: true, workingDays: 4 });
+  });
+
+  it('explains the counting in plain English', () => {
+    expect(countingNote(true, true)).toContain('= 5 days');
+    expect(countingNote(true, false)).toContain('4 days (Mon–Thu)');
+    expect(countingNote(false, true)).toContain('4 days (Tue–Fri)');
+    expect(countingNote(false, false)).toContain('3 days (Tue–Thu)');
+  });
+});
+
+describe('working hours', () => {
+  it('multiplies working days by hours per day', () => {
+    expect(workingHours(20, 8)).toBe(160);
+    expect(workingHours(21, 7.5)).toBe(157.5);
+    expect(workingHours(3, 7.33)).toBe(21.99);
+    expect(workingHours(0, 8)).toBe(0);
+  });
+
+  it('validates hours per day', () => {
+    expect(parseHours('7.5')).toBe(7.5);
+    expect(parseHours('24')).toBe(24);
+    expect(parseHours('0')).toBeNull();
+    expect(parseHours('-1')).toBeNull();
+    expect(parseHours('25')).toBeNull();
+    expect(parseHours('abc')).toBeNull();
+    expect(parseHours('')).toBeNull();
+    expect(parseHours(null)).toBeNull();
+  });
+});
+
+describe('URL state', () => {
+  const langs = ['en-GB'];
+  it('reads and writes include-start and hours, keeping old links working', () => {
+    const old = stateFromUrl('?mode=between&start=2026-10-19&end=2026-10-23&inc=1&country=none', '2026-10-19', langs);
+    expect(old).toMatchObject({ includeStart: true, includeEnd: true, hours: 8 });
+    expect(stateToQuery(old)).not.toMatch(/incs|hours/);
+
+    const s = stateFromUrl('?mode=between&start=2026-10-19&end=2026-10-23&incs=0&hours=7.5&country=none', '2026-10-19', langs);
+    expect(s).toMatchObject({ includeStart: false, includeEnd: false, hours: 7.5 });
+    const q = stateToQuery(s);
+    expect(q).toContain('incs=0');
+    expect(q).toContain('hours=7.5');
+  });
+
+  it('ignores invalid hours', () => {
+    expect(stateFromUrl('?hours=99', '2026-10-19', langs).hours).toBe(8);
+    expect(stateFromUrl('?hours=0', '2026-10-19', langs).hours).toBe(8);
+  });
+
+  it('accepts every supported country code', async () => {
+    const { COUNTRIES } = await import('../../src/lib/holidays');
+    expect(COUNTRIES.length).toBeGreaterThanOrEqual(40);
+    for (const { code } of COUNTRIES) expect(stateFromUrl(`?country=${code}`, '2026-10-19', langs).country).toBe(code);
+  });
+});
+
+describe('monthlyBreakdown', () => {
+  it('splits a year into months that add up to the yearly total', () => {
+    const months = monthlyBreakdown(2026, { weekendDays: SAT_SUN });
+    expect(months).toHaveLength(12);
+    expect(months.map((m) => m.totalDays)).toEqual([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]);
+    expect(months[0]).toMatchObject({ month: 1, workingDays: 22, weekendDays: 9 });
+    const total = months.reduce((n, m) => n + m.workingDays, 0);
+    expect(total).toBe(countWorkingDays('2026-01-01', '2026-12-31', true, { weekendDays: SAT_SUN }).workingDays);
+    expect(total).toBe(261);
+  });
+
+  it('handles leap years, holidays and days off', () => {
+    const months = monthlyBreakdown(2024, {
+      weekendDays: SAT_SUN,
+      holidays: lookup({ '2024-12-25': 'Christmas Day', '2024-12-28': 'Weekend holiday' }),
+      daysOff: new Set(['2024-12-24']),
+    });
+    expect(months[1].totalDays).toBe(29);
+    expect(months[11]).toMatchObject({ daysOff: 2, workingDays: 20 });
+  });
+
+  it('UK (England) 2026 has 253 working days', async () => {
+    const c = await loadCountry('GB');
+    const hols = new Set(c.getHolidays(2026, 'ENG').map((h) => h.date));
+    const months = monthlyBreakdown(2026, { weekendDays: SAT_SUN, holidays: (d) => (hols.has(d) ? ['h'] : undefined) });
+    expect(months.reduce((n, m) => n + m.workingDays, 0)).toBe(253);
+    expect(months[11]).toMatchObject({ daysOff: 2, workingDays: 21 }); // 25 Dec and 28 Dec substitute
   });
 });
 
