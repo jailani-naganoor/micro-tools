@@ -29,10 +29,14 @@ and can be revisited.
 
 ## Working Days Calculator
 
-9. **Counting convention.** "Between" counts from the start date (always included) up to the end
-   date (excluded unless "Include the end date" is ticked), like many online date calculators.
-   Excel's `NETWORKDAYS` counts both dates, so tick the box to match it. **Add/subtract** never
-   counts the start date (1 working day after Friday is Monday), like Excel's `WORKDAY`.
+9. **Counting convention.** "Between" counts from the start date up to the end date. By default
+   the start date is included and the end date is not, like many online date calculators. Two tick
+   boxes, "Include the start date" and "Include the end date", change this: for Monday to Friday of
+   one week, both = 5 days, one of them = 4, neither = 3. A one-day range (start = end) counts 1 only
+   when both are included, so the default still gives 0, as before. Excel's `NETWORKDAYS` counts both
+   dates, so tick both boxes to match it. A note under the result explains the current count in
+   words. **Add/subtract** never counts the start date (1 working day after Friday is Monday), like
+   Excel's `WORKDAY`.
 10. **Reversed dates are swapped** and the result shows a note, rather than a negative number.
 11. **Holidays on weekends** count once, as weekend days. Substitute or observed days come from
     the date-holidays data where the country defines them.
@@ -65,6 +69,41 @@ and can be revisited.
     in "How it works" and on the About page, and the generated subset carries the same licence
     (`src/data/holidays/README.md`).
 22. **Copy result** copies a plain-text summary plus the share link. "Copy link" was added too.
+
+
+### Working Days improvements (branch `improvements-1`)
+
+46. **Start date in the URL.** The start date is included by default, so `incs=0` is only written
+    when it is unticked. Links made before this change have no `incs` and behave exactly as before.
+47. **Working hours** = working days × hours per day, rounded to two decimals. Hours per day accepts
+    0.25–24, decimals allowed (`hours=7.5`). The default of 8 is not written to the URL. Add mode
+    shows hours for the requested number of working days. It doesn't model part days or shifts.
+48. **"Working days in [year]" table** sits directly under the calculator (above the result ad
+    slot, so no ad sits beside its controls). It uses the same country, region, weekend, unticked
+    holidays and custom days off as the calculator, and counts every day of each month (the start/end
+    tick boxes don't apply). The year selector offers the current year ±2 and defaults to the current
+    year; the chosen year is not stored in the URL. The table is rendered with placeholder cells so
+    filling it in causes no layout shift.
+49. **Country list is alphabetical** now that there are 41 countries. The default still comes from
+    the browser language (#16).
+50. **Countries added (27):** Austria, Bahrain, Belgium, Croatia, Czechia, Denmark, Finland, Greece,
+    Hong Kong, Hungary, Indonesia, Italy, Kenya, Luxembourg, Malaysia, Netherlands, Nigeria, Norway,
+    Pakistan, Poland, Portugal, Romania, Slovakia, Sri Lanka, Sweden, Switzerland and Thailand. Each
+    one passes the "matches the full date-holidays package" test for every region and seven sample
+    years. Files are 1–15 KB each and still lazy-loaded; the initial calculator script is about
+    24 KB (was 18 KB) because of the new features, not the data.
+51. **Countries left out:**
+    - **Not in date-holidays 3.37.0:** Qatar, Kuwait, Oman, Nepal.
+    - **Saudi Arabia:** the data has one day each for Eid al-Fitr and Eid al-Adha, while the official
+      Eid breaks are several days, so counts would be clearly too high.
+    - **Vietnam:** only two days are listed for Tết (Lunar New Year), while the official break is
+      several days.
+    - **Bangladesh:** the data still lists holidays such as National Mourning Day (15 August) that
+      we could not confirm are current days off.
+    These can be added later if the data improves, or by overriding the rules in the build script.
+52. **Lunar and Islamic holidays** (Malaysia, Indonesia, Pakistan, Bahrain, UAE, Sri Lanka, …) are
+    calculated in advance by date-holidays. Official dates are often confirmed close to the day and
+    can differ by one day. The FAQ says so; users can untick a holiday and add a day off.
 
 ## Device Test
 

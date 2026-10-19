@@ -5,7 +5,7 @@ entirely in the browser on its home page; there is no backend, database or accou
 
 | Site | Folder | What it does |
 | --- | --- | --- |
-| Working Days Calculator | `apps/working-days` | Count business days between two dates, or add/subtract business days, with public holidays for 14 countries (date-holidays), custom weekends and days off. State is kept in the URL. |
+| Working Days Calculator | `apps/working-days` | Count business days and working hours between two dates (start and end dates included or not), or add/subtract business days, with public holidays for 41 countries (date-holidays), custom weekends and days off. A "Working days in [year]" table shows each month. State is kept in the URL. |
 | Device Test | `apps/device-test` | Online mic, webcam, keyboard and dead pixel tests in four hash-linked tabs (`#mic`, `#webcam`, `#keyboard`, `#screen`). Audio and video never leave the device. |
 
 Shared code lives in `packages/ui` (layout, SEO head and JSON-LD, header, footer, theme toggle,
