@@ -115,3 +115,39 @@ export async function useProductionHeaders(page: Page, headersFile: string) {
   });
   return headers;
 }
+
+/** Ids of posts with `draft: false` in a blog content folder. */
+export async function publishedPostIds(blogDir: string): Promise<string[]> {
+  const { readdirSync, readFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  return readdirSync(blogDir)
+    .filter((f) => f.endsWith('.md') && /^draft:\s*false\s*$/m.test(readFileSync(join(blogDir, f), 'utf8')))
+    .map((f) => f.replace(/\.md$/, ''))
+    .sort();
+}
+
+/**
+ * Every published post is listed on /blog/, is in sitemap.xml, has no noindex, carries
+ * Article JSON-LD and links back to the tool's home page.
+ */
+export async function checkPublishedPosts(page: Page, request: APIRequestContext, ids: string[]) {
+  expect(ids.length, 'published posts').toBeGreaterThan(0);
+  await page.goto('/blog/');
+  await expect(page.getByText('No articles have been published yet.')).toHaveCount(0);
+  await expect(page.locator('main a[href^="/blog/"]:not([href="/blog/"])')).toHaveCount(ids.length);
+  const sitemap = await (await request.get('/sitemap.xml')).text();
+  for (const id of ids) {
+    const path = `/blog/${id}/`;
+    await expect(page.locator(`main a[href="${path}"]`), path).toHaveCount(1);
+    expect(sitemap, `${path} in sitemap`).toContain(`${path}</loc>`);
+  }
+  for (const id of ids) {
+    const path = `/blog/${id}/`;
+    await page.goto(path);
+    await checkPageBasics(page);
+    await expect(page.locator('meta[name="robots"]'), `${path} noindex`).toHaveCount(0);
+    expect(await jsonLdTypes(page)).toContain('Article');
+    await expect(page.getByText('Draft — not published')).toHaveCount(0);
+    expect(await page.locator('main a[href="/"], main a[href^="/#"]').count(), `${path} links to the tool`).toBeGreaterThan(0);
+  }
+}

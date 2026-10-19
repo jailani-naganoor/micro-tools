@@ -1,4 +1,14 @@
-import { test, expect, checkInternalLinks, checkPageBasics, jsonLdTypes } from '@micro/ui/testing/fixtures';
+import {
+  test,
+  expect,
+  checkInternalLinks,
+  checkPageBasics,
+  checkPublishedPosts,
+  jsonLdTypes,
+  publishedPostIds,
+} from '@micro/ui/testing/fixtures';
+
+const BLOG_DIR = new URL('../../src/content/blog/', import.meta.url).pathname;
 
 const INNER = ['/about/', '/contact/', '/privacy/', '/terms/', '/blog/'];
 
@@ -24,9 +34,20 @@ test('privacy policy states media never leaves the device', async ({ page }) => 
   await expect(page.getByText('This site does not show ads and does not use advertising or tracking cookies.')).toBeVisible();
 });
 
-test('blog index hides draft posts', async ({ page }) => {
-  await page.goto('/blog/');
-  await expect(page.getByText('No articles have been published yet.')).toBeVisible();
+test('every published post is listed, in the sitemap, indexable and links to the tool', async ({ page, request }) => {
+  await checkPublishedPosts(page, request, await publishedPostIds(BLOG_DIR));
+});
+
+test('home page links to 2–3 guides that exist', async ({ page, request }) => {
+  await page.goto('/');
+  const guides = page.locator('section[aria-labelledby="guides-heading"] li a');
+  const count = await guides.count();
+  expect(count).toBeGreaterThanOrEqual(2);
+  expect(count).toBeLessThanOrEqual(3);
+  for (const href of await guides.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
+    expect(href).toMatch(/^\/blog\/[a-z0-9-]+\/$/);
+    expect((await request.get(href)).status(), href).toBe(200);
+  }
 });
 
 test('404 page', async ({ page, guard }) => {

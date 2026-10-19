@@ -1,7 +1,7 @@
 // SHOW_DRAFTS must reach the build: with it on, both sites list and render the draft posts
 // (and still keep them out of the sitemap); with it off, drafts are not built at all.
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -33,7 +33,29 @@ function draftSlugs(app: string): string[] {
     .map((f) => f.replace(/\.md$/, ''));
 }
 
-afterAll(() => outDirs.forEach((d) => rmSync(d, { recursive: true, force: true })));
+// All real posts may be published, so each build test adds its own temporary draft post.
+const TEST_DRAFT = 'zz-test-draft-post';
+const testDraftFiles: string[] = [];
+function addTestDraft(app: string) {
+  const file = join(root, 'apps', app, 'src/content/blog', `${TEST_DRAFT}.md`);
+  writeFileSync(
+    file,
+    '---\ntitle: "Test draft"\ndescription: "Temporary draft created by drafts.test.ts."\npubDate: 2026-01-01\ndraft: true\n---\n\nTest.\n',
+  );
+  testDraftFiles.push(file);
+}
+
+afterAll(() => {
+  testDraftFiles.forEach((f) => rmSync(f, { force: true }));
+  outDirs.forEach((d) => rmSync(d, { recursive: true, force: true }));
+});
+
+function publishedSlugs(app: string): string[] {
+  const dir = join(root, 'apps', app, 'src/content/blog');
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.md') && /^draft:\s*false\s*$/m.test(readFileSync(join(dir, f), 'utf8')))
+    .map((f) => f.replace(/\.md$/, ''));
+}
 
 describe('SHOW_DRAFTS flag parsing', () => {
   it('accepts the usual spellings, with or without quotes', () => {
@@ -61,6 +83,7 @@ describe('SHOW_DRAFTS flag parsing', () => {
 describe.skipIf(!!process.env.TZ)('SHOW_DRAFTS builds', () => {
   for (const app of ['device-test', 'working-days']) {
     it(`${app}: SHOW_DRAFTS=true lists and builds every draft`, () => {
+      addTestDraft(app);
       const slugs = draftSlugs(app);
       expect(slugs.length).toBeGreaterThan(0);
       const { outDir, log } = build(app, 'true');
@@ -79,14 +102,20 @@ describe.skipIf(!!process.env.TZ)('SHOW_DRAFTS builds', () => {
   }
 
   it('a quoted value from a hosting dashboard ("true") also shows drafts', () => {
+    addTestDraft('device-test');
     const { outDir } = build('device-test', '"true"');
-    expect(readFileSync(join(outDir, 'blog/index.html'), 'utf8')).not.toContain('No articles have been published yet');
+    expect(readFileSync(join(outDir, 'blog/index.html'), 'utf8')).toContain(`/blog/${TEST_DRAFT}/`);
   }, 120_000);
 
-  it('without SHOW_DRAFTS no draft is built or listed', () => {
+  it('without SHOW_DRAFTS no draft is built or listed, and published posts still are', () => {
+    addTestDraft('device-test');
     const { outDir, log } = build('device-test', undefined);
     expect(log).toContain('blog drafts hidden');
-    expect(readFileSync(join(outDir, 'blog/index.html'), 'utf8')).toContain('No articles have been published yet');
-    for (const slug of draftSlugs('device-test')) expect(existsSync(join(outDir, 'blog', slug))).toBe(false);
+    const index = readFileSync(join(outDir, 'blog/index.html'), 'utf8');
+    for (const slug of draftSlugs('device-test')) {
+      expect(index).not.toContain(`/blog/${slug}/`);
+      expect(existsSync(join(outDir, 'blog', slug))).toBe(false);
+    }
+    for (const slug of publishedSlugs('device-test')) expect(index).toContain(`/blog/${slug}/`);
   }, 120_000);
 });

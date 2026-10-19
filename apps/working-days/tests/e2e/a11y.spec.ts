@@ -10,6 +10,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       '/about/',
       '/privacy/',
       '/blog/',
+      '/blog/how-to-add-business-days-to-a-date/',
       '/does-not-exist/',
     ]) {
       test(`no WCAG A/AA violations on ${path}`, async ({ page, guard }) => {
