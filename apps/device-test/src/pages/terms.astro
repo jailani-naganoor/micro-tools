@@ -7,12 +7,12 @@ import { site } from '../site.config';
 <PageLayout
   site={site}
   title={`Terms of Use | ${site.name}`}
-  description="Terms of use for the free online mic, webcam, keyboard and dead pixel tests, including the flashing colours warning."
+  description="Terms of use for the free online mic, webcam, speaker, keyboard and dead pixel tests, including the flashing colours warning."
   path="/terms/"
   heading="Terms of Use"
   crumbs={[{ name: 'Terms', path: '/terms/' }]}
 >
-  <TermsContent site={site} lastUpdated="18 October 2026">
+  <TermsContent site={site} lastUpdated="19 October 2026">
     <Fragment slot="disclaimer">
       <p>
         The tests show what your browser can detect. They help with troubleshooting but cannot diagnose every
@@ -21,6 +21,12 @@ import { site } from '../site.config';
       <p>
         The screen test fills your screen with solid colours that change when you click or press a key. If you are
         sensitive to changing light or colours, please take care.
+      </p>
+      <p>
+        The optional stuck pixel fixer flashes colours rapidly. It only starts after you confirm a photosensitivity
+        warning. Do not use it if you or anyone who can see your screen has photosensitive epilepsy or is sensitive to
+        flashing lights. It cannot repair dead pixels and may not fix stuck ones. The speaker test plays sound: start
+        with a low volume.
       </p>
     </Fragment>
   </TermsContent>

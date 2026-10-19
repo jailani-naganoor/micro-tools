@@ -8,8 +8,8 @@ export const site: SiteConfig = {
   name: 'Device Test',
   publisher: env.publisherName,
   description:
-    'Free online mic test, webcam test, keyboard test and dead pixel test. Runs in your browser — audio and video never leave your device.',
-  keyword: 'Online Mic, Webcam, Keyboard & Dead Pixel Test',
+    'Free online mic, webcam, speaker, keyboard and dead pixel tests, plus a stuck pixel fixer. Runs in your browser: audio and video never leave your device.',
+  keyword: 'Online Mic, Webcam, Speaker, Keyboard & Dead Pixel Test',
   themeColor: { light: '#ffffff', dark: '#101317' },
   sibling: {
     name: 'Working Days Calculator',

@@ -5,7 +5,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
     test.use({ colorScheme });
     for (const path of [
       '/?mode=between&start=2026-12-01&end=2026-12-31&country=GB&region=SCT&off=2026-12-24',
-      '/?mode=add&start=2026-12-18&days=10&country=US',
+      '/?mode=add&start=2026-12-18&days=10&country=US&hours=7.5',
+      '/?mode=between&start=2026-10-19&end=2026-10-23&incs=0&country=CH&region=ZH',
       '/about/',
       '/privacy/',
       '/blog/',

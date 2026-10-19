@@ -101,6 +101,106 @@ test.describe('count working days between dates', () => {
   });
 });
 
+test.describe('start date, working hours and counting note', () => {
+  test('include start date toggle changes the count, note and URL', async ({ page }) => {
+    // Mon 19 to Fri 23 Oct 2026
+    await page.goto('/?mode=between&start=2026-10-19&end=2026-10-23&country=none');
+    const note = page.locator('#result-note');
+    await expect(result(page)).toHaveText('4 working days');
+    await expect(page.getByLabel('Include the start date in the count')).toBeChecked();
+    await expect(note).toContainText('Mon to Fri = 4 days (Mon–Thu)');
+
+    await page.getByLabel('Include the end date in the count').check();
+    await expect(result(page)).toHaveText('5 working days');
+    await expect(note).toHaveText('Both dates are counted: Mon to Fri, both dates included = 5 days.');
+    await expect(page.locator('#result-sub')).toContainText('including both dates');
+
+    await page.getByLabel('Include the start date in the count').uncheck();
+    await expect(result(page)).toHaveText('4 working days');
+    await expect(note).toContainText('(Tue–Fri)');
+    await expect(page).toHaveURL(/incs=0/);
+
+    await page.getByLabel('Include the end date in the count').uncheck();
+    await expect(result(page)).toHaveText('3 working days');
+    await expect(note).toContainText('3 days (Tue–Thu)');
+
+    await page.reload();
+    await expect(result(page)).toHaveText('3 working days');
+    await expect(page.getByLabel('Include the start date in the count')).not.toBeChecked();
+  });
+
+  test('working hours use hours per day, decimals allowed, stored in the URL', async ({ page }) => {
+    await page.goto('/?mode=between&start=2026-10-19&end=2026-10-26&country=none');
+    await expect(stat(page, 'hours')).toHaveText('40');
+    await page.getByLabel('Hours per working day').fill('7.5');
+    await expect(stat(page, 'hours')).toHaveText('37.5');
+    await expect(page.locator('#hours-per-day')).toHaveText('(7.5 h/day)');
+    await expect(page).toHaveURL(/hours=7\.5/);
+    await page.getByLabel('Hours per working day').fill('0');
+    await expect(page.locator('#result-sub')).toContainText('hours in a working day');
+    await page.getByLabel('Hours per working day').fill('8');
+    await expect(stat(page, 'hours')).toHaveText('40');
+    await expect(page).not.toHaveURL(/hours=/);
+  });
+
+  test('add mode shows hours and a note that the start date is not counted', async ({ page }) => {
+    await page.goto('/?mode=add&start=2026-10-23&days=3&country=none&hours=6');
+    await expect(result(page)).toHaveText(/28 Oct 2026/);
+    await expect(stat(page, 'hours')).toHaveText('18');
+    await expect(page.locator('#result-note')).toContainText('start date isn’t counted');
+  });
+});
+
+test.describe('working days in a year', () => {
+  test('monthly table follows country, region, weekend, hours and year', async ({ page }) => {
+    const thisYear = new Date().getFullYear();
+    await page.goto('/?mode=between&start=2026-12-01&end=2026-12-31&country=GB&region=ENG');
+    const table = page.locator('#year');
+    const total = page.locator('#year-total td');
+    await expect(page.locator('#year-select option')).toHaveCount(5);
+    await expect(page.locator('#year-select')).toHaveValue(String(thisYear));
+    await expect(page.locator('#year-select option').first()).toHaveText(String(thisYear - 2));
+
+    await page.locator('#year-select').selectOption('2026');
+    await expect(table.getByRole('heading', { level: 2 })).toHaveText('Working days in 2026');
+    await expect(page.locator('#year-body tr')).toHaveCount(12);
+    await expect(total.nth(0)).toHaveText('365');
+    await expect(total.nth(3)).toHaveText('253');
+    await expect(total.nth(4)).toHaveText('2,024');
+    // December: 31 days, 8 weekend days, Christmas Day and the Boxing Day substitute.
+    await expect(page.locator('#year-body tr').nth(11).locator('td')).toHaveText(['31', '8', '2', '21', '168']);
+    await expect(page.locator('#year-settings')).toContainText('United Kingdom (England)');
+
+    // Scotland adds 2 January and St Andrew's Day (30 Nov 2026) but not Easter Monday.
+    await page.locator('#region').selectOption('SCT');
+    await expect(total.nth(3)).toHaveText('252');
+    await page.locator('#weekend').selectOption('sun');
+    await expect(total.nth(1)).toHaveText('52');
+    await page.getByLabel('Hours per working day').fill('7.5');
+    await expect(page.locator('#year-body tr').first().locator('td').nth(4)).not.toHaveText('–');
+    await page.locator('#country').selectOption('none');
+    await expect(total.nth(2)).toHaveText('0');
+    await expect(total.nth(3)).toHaveText('313');
+  });
+});
+
+test.describe('more countries', () => {
+  for (const [code, name, region] of [
+    ['NL', 'Netherlands', ''],
+    ['CH', 'Switzerland', 'ZH'],
+    ['MY', 'Malaysia', ''],
+    ['PK', 'Pakistan', ''],
+    ['KE', 'Kenya', ''],
+  ]) {
+    test(`${name} loads holidays`, async ({ page }) => {
+      await page.goto(`/?mode=between&start=2026-01-01&end=2026-12-31&inc=1&country=${code}${region ? `&region=${region}` : ''}`);
+      await expect(page.locator('#country')).toHaveValue(code);
+      await expect(page.locator('#hol-list input[data-holiday]').first()).toBeVisible();
+      await expect(result(page)).toHaveText(/working days$/);
+    });
+  }
+});
+
 test.describe('add or subtract working days', () => {
   test('adds working days over holidays', async ({ page }) => {
     await page.goto('/?mode=add&start=2026-12-18&days=10&country=GB&region=ENG&weekend=sat-sun');

@@ -8,7 +8,7 @@ export const site: SiteConfig = {
   name: 'Working Days Calculator',
   publisher: env.publisherName,
   description:
-    'Free working days calculator: count business days between two dates or add business days to a date, with public holidays for 14 countries.',
+    'Free working days calculator: count business days between two dates or add business days to a date, with public holidays for 41 countries.',
   keyword: 'Working Days Calculator',
   themeColor: { light: '#ffffff', dark: '#101317' },
   sibling: {

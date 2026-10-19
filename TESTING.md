@@ -1,6 +1,6 @@
 # Testing
 
-## Automated results (18 October 2026, branch `initial-build`)
+## Automated results (19 October 2026, branch `improvements-1`)
 
 Environment: Linux cloud container, Node 22.22.0, npm 10.9.4, Chromium 141 (Playwright 1.56.1),
 Lighthouse 13.5.0. All env flags off (no ads, no analytics, drafts hidden).
@@ -8,12 +8,12 @@ Lighthouse 13.5.0. All env flags off (no ads, no analytics, drafts hidden).
 | Check | Command | Result |
 | --- | --- | --- |
 | Build | `npm run build` | ✅ Both sites build (7 pages each, plus `robots.txt` and `sitemap.xml`) |
-| Type check | `npm run check` | ✅ 0 errors, 0 warnings in both apps (one deprecation hint for the `execCommand` copy fallback) |
+| Type check | `npm run check` | ✅ 0 errors, 0 warnings in both apps (one existing deprecation hint for the `execCommand` copy fallback) |
 | Lint | `npm run lint` | ✅ No problems |
-| Unit tests | `npm run test:unit` | ✅ 32/32, run in three time zones: system (UTC), `Pacific/Kiritimati` (UTC+14) and `America/Los_Angeles` |
-| E2E: Working Days | `npm run test:e2e -w @micro/working-days` | ✅ 41/41 |
-| E2E: Device Test | `npm run test:e2e -w @micro/device-test` | ✅ 48/48 (two projects: media allowed and media denied) |
-| Lighthouse mobile | `npm run lighthouse` | ✅ 100 in every category on all 8 pages tested, CLS 0 (table below) |
+| Unit tests | `npm run test:unit` | ✅ 55/55 (46 Working Days, 9 Device Test), run in three time zones: system (UTC), `Pacific/Kiritimati` (UTC+14) and `America/Los_Angeles` |
+| E2E: Working Days | `npm run test:e2e -w @micro/working-days` | ✅ 52/52 (was 41) |
+| E2E: Device Test | `npm run test:e2e -w @micro/device-test` | ✅ 67/67 (was 48; two projects: media allowed and media denied) |
+| Lighthouse mobile | `npm run lighthouse` | ✅ 100 in every category on all 10 pages tested, CLS 0 (table below) |
 | External requests with flags off | E2E fixture | ✅ None: every E2E test fails on any cross-origin request |
 | Console errors | E2E fixture | ✅ None: every E2E test fails on a console error (except the deliberate 404 and CSP-violation tests) |
 
@@ -21,14 +21,45 @@ Lighthouse 13.5.0. All env flags off (no ads, no analytics, drafts hidden).
 
 | Site | Page | Performance | Accessibility | Best practices | SEO | CLS | LCP | TBT |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| working-days | `/` | 100 | 100 | 100 | 100 | 0 | 1.26 s | 38 ms |
-| working-days | `/about/` | 100 | 100 | 100 | 100 | 0 | 1.21 s | 0 ms |
-| working-days | `/blog/` | 100 | 100 | 100 | 100 | 0 | 1.21 s | 0 ms |
-| working-days | `/privacy/` | 100 | 100 | 100 | 100 | 0 | 1.25 s | 0 ms |
-| device-test | `/` | 100 | 100 | 100 | 100 | 0 | 1.12 s | 0 ms |
-| device-test | `/#keyboard` | 100 | 100 | 100 | 100 | 0 | 1.43 s | 0 ms |
-| device-test | `/about/` | 100 | 100 | 100 | 100 | 0 | 1.25 s | 0 ms |
+| working-days | `/` | 100 | 100 | 100 | 100 | 0 | 1.28 s | 60 ms |
+| working-days | `/about/` | 100 | 100 | 100 | 100 | 0 | 1.28 s | 0 ms |
+| working-days | `/blog/` | 100 | 100 | 100 | 100 | 0 | 1.26 s | 0 ms |
+| working-days | `/privacy/` | 100 | 100 | 100 | 100 | 0 | 1.28 s | 0 ms |
+| device-test | `/` | 100 | 100 | 100 | 100 | 0 | 1.37 s | 0 ms |
+| device-test | `/#keyboard` | 100 | 100 | 100 | 100 | 0 | 1.41 s | 0 ms |
+| device-test | `/#speaker` | 100 | 100 | 100 | 100 | 0 | 1.20 s | 0 ms |
+| device-test | `/#screen` | 100 | 100 | 100 | 100 | 0 | 1.40 s | 0 ms |
+| device-test | `/about/` | 100 | 100 | 100 | 100 | 0 | 1.20 s | 0 ms |
 | device-test | `/privacy/` | 100 | 100 | 100 | 100 | 0 | 1.21 s | 0 ms |
+
+The Working Days initial calculator script is now about 24 KB (was 18 KB); holiday data and the
+holiday engine are still lazy-loaded per country.
+
+### New in this round (`improvements-1`)
+
+**Working Days**
+- Unit: include/exclude start and end date (Mon–Fri = 5/4/4/3, single day, reversed dates, holiday on
+  an excluded start date), the plain-English note, working hours (decimals, rounding), hours
+  validation, URL read/write of `incs` and `hours` with old links unchanged, every country code
+  accepted, monthly breakdown (months add up to the year, leap year, holidays and days off, UK
+  England 2026 = 253 days), and the full date-holidays comparison now covering all 41 countries.
+- E2E: start-date toggle (count, note, result text, URL, survives reload), hours per day (decimal,
+  invalid value, default not in URL), hours and note in add mode, the year table (5-year selector,
+  2026 totals for England, then Scotland, Sunday-only weekend, hours, no holidays), five of the new
+  countries load (including a Swiss canton), and axe checks on new states.
+
+**Device Test**
+- Unit: rollover counting, chatter detection (30 ms threshold, auto-repeat and held keys ignored),
+  touch-only detection and physical-key detection.
+- E2E: Speaker tab (direct link, 5-tab keyboard navigation, left/right/both buttons), mic details
+  panel, noise suppression and echo cancellation toggles restarting the stream, Download recording
+  (`blob:` link, `download` attribute, no non-GET requests), max keys at once and chatter flag,
+  phone keyboard message on an emulated touch-only phone with the "I have a keyboard connected"
+  button and auto-start on a physical key, new screen patterns and hidden cursor, fullscreen
+  fallback message (request stubbed to fail), iPhone tip (iPhone user agent), fixer warning flow
+  (never auto-starts, needs confirmation, extra confirmation with reduced motion, stops on Esc and
+  on one click), and axe checks on `#speaker`, the fixer warning and the phone keyboard message.
+  The fixer and speaker also run under the production CSP.
 
 Fixed during testing: the first run scored accessibility 97 on `/#keyboard` (an `aria-label` on
 a plain `div`; it now has `role="region"`), and the calculator bundle was cut from 1 MB to an
@@ -116,7 +147,14 @@ Please run these on real devices and browsers before launch. Tick them off as yo
 ### Working Days Calculator
 - [ ] Compare a few results with a source you trust (e.g. your HR calendar or a government
       holiday page) for your main countries and regions.
-- [ ] Spot check holidays for each of the 14 countries for the current and next year.
+- [ ] Spot check holidays for each of the 41 countries for the current and next year, especially the
+      27 new ones and the lunar/Islamic holidays (Malaysia, Indonesia, Pakistan, Bahrain, UAE, Sri
+      Lanka, Hong Kong, Thailand), which can move by a day.
+- [ ] "Include the start date" and "Include the end date": try all four combinations on a Mon–Fri
+      range and check the note under the result reads sensibly (5, 4, 4, 3 days).
+- [ ] Hours per day: type 7.5 on a phone keyboard (decimal key) and with a comma-decimal locale.
+- [ ] "Working days in [year]" table: compare one year's monthly totals with your HR calendar; check
+      it scrolls sideways on a phone without the page scrolling sideways.
 - [ ] Copy result and Copy link on desktop and mobile; open a copied link in a private window and
       check it shows the same result.
 - [ ] Date pickers behave well on iOS and Android.
@@ -133,6 +171,24 @@ Please run these on real devices and browsers before launch. Tick them off as yo
 - [ ] Dead pixel test: full screen on desktop; on iPhone the colours fill the browser and the test
       ends after the last colour.
 - [ ] Confirm the browser's camera/mic "in use" indicator turns off when you press Stop or switch tabs.
+- [ ] Speaker: left and right come from the correct side on headphones and laptop speakers. With
+      mono audio turned on in the OS, both sides play.
+- [ ] Mic: toggling noise suppression or echo cancellation restarts the mic; check the details
+      panel values in Chrome, Firefox and Safari. Download recording saves a playable file in each
+      browser (Safari saves m4a).
+- [ ] Keyboard: hold 6 or more keys on a gaming keyboard and a cheap office keyboard and compare
+      "most keys at once". Normal fast typing should not flag chatter.
+- [ ] Keyboard on a phone or tablet: the "physical keyboards only" message shows. With a Bluetooth
+      keyboard connected, the first key press starts the test. An iPad with a trackpad keyboard
+      shows the test straight away.
+- [ ] Screen on Android Chrome: truly full screen with no bars. On iPhone: the tip shows before
+      starting, the test fills the browser window and the fallback note appears. Opened from a Home
+      Screen icon, the tip is hidden.
+- [ ] Screen: gradient banding and checkerboard look right at 100% and other zoom levels; the
+      cursor is hidden.
+- [ ] Stuck pixel fixer: read the warning wording. It never starts without confirmation, and the
+      extra confirmation appears with Reduce Motion on (macOS, iOS, Windows). One tap stops it,
+      dragging works on touch, Esc works.
 
 ### Blog drafts (all `draft: true`)
 - [ ] Read all 10 posts and set `draft: false` only on those you approve.

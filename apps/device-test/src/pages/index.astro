@@ -11,7 +11,7 @@ import { site } from '../site.config';
 const faq = [
   {
     q: 'Is my audio or video uploaded or recorded?',
-    a: 'No. The tests run entirely in your browser. Sound and video from your microphone and camera are processed on your device and never sent to a server. The optional 5-second recording and webcam snapshots stay in your browser unless you choose to save a snapshot to your own device.',
+    a: 'No. The tests run entirely in your browser. Sound and video from your microphone and camera are processed on your device and never sent to a server. The optional 5-second recording and webcam snapshots stay in your browser’s memory unless you choose to download them to your own device.',
   },
   {
     q: 'Why doesn’t my browser ask for permission?',
@@ -22,12 +22,28 @@ const faq = [
     a: 'Make sure the right microphone is selected in the list, that it isn’t muted by a hardware switch or a mute key, and that no other app is using it. Headsets can have a mute button on the cable or ear cup. Try another USB port for USB microphones.',
   },
   {
+    q: 'What do noise suppression and echo cancellation do?',
+    a: 'They are processing steps the browser can apply to your microphone. Noise suppression reduces steady background noise such as fans. Echo cancellation removes sound from your speakers that the microphone picks up. Turn them off or on, record a clip each time and play it back to hear the difference. The microphone details show whether the browser actually applied your choice, because some browsers and devices ignore it.',
+  },
+  {
+    q: 'How do I check my left and right speakers?',
+    a: 'Open the Speaker test tab and press Play left, Play right or Play both. Each plays a short sound made in your browser. Turn the volume down first. If both sides play the same sound, check whether mono audio is switched on in your system’s accessibility settings.',
+  },
+  {
     q: 'Why is my webcam resolution lower than advertised?',
     a: 'The browser and camera agree on a resolution that both support. Choose a higher “Requested quality” to ask for more. USB hubs, older USB ports, low light and some camera drivers can also limit the resolution or frame rate.',
   },
   {
     q: 'Why don’t some keys light up in the keyboard test?',
     a: 'Fn is handled inside the keyboard and is never sent to the computer. Some system shortcuts, media keys and Print Screen may be captured by the operating system before the browser sees them. If an ordinary letter key never lights up, the key or keyboard may be faulty.',
+  },
+  {
+    q: 'How do I test keyboard ghosting and chatter?',
+    a: 'For ghosting, hold several keys together: “Most keys at once” shows how many the browser received at the same time, and a held key that doesn’t light up means the keyboard can’t register that combination. For chatter, type normally: a key that registers again within 30 ms of being released is flagged, because that is usually a worn or dirty switch. The test can’t measure polling rate.',
+  },
+  {
+    q: 'Can I test my phone’s on-screen keyboard?',
+    a: 'No. The keyboard test is for physical keyboards. On a phone or tablet without a keyboard, the tab explains this instead of showing the test. If you connect a USB or Bluetooth keyboard, press any key on it, or choose “I have a keyboard connected”, to start the test.',
   },
   {
     q: 'What is the difference between ANSI and ISO keyboards?',
@@ -38,34 +54,41 @@ const faq = [
     a: 'A dead pixel stays black on every colour and is easiest to see on white. A stuck pixel stays one colour, such as red, green or blue, and is easiest to see on black. Wipe the screen first so dust isn’t mistaken for a faulty pixel.',
   },
   {
+    q: 'Can the stuck pixel fixer repair dead pixels?',
+    a: 'No. A dead pixel gets no power, and software can’t change that. The fixer flashes colours quickly over a stuck pixel, which sometimes gets it working again, but it doesn’t always work. It flashes rapidly, so it only starts after you read and confirm a photosensitivity warning, and one click, tap or Esc stops it.',
+  },
+  {
     q: 'Does this work on phones and tablets?',
-    a: 'Yes, in current mobile browsers. Use the front or back camera from the camera list. On iPhone and iPad, full-screen mode may not be available for the dead pixel test, but the colours still fill the browser window — tap through all colours to finish.',
+    a: 'Yes, in current mobile browsers. Use the front or back camera from the camera list. On Android the dead pixel test goes full screen. On iPhone, web pages can’t go fully full screen, so the colours fill the browser window instead; turn the phone to landscape, or add the site to your Home Screen and open it from there, for a bigger view.',
   },
 ];
 ---
 
 <BaseLayout
   site={site}
-  title="Mic Test, Webcam Test, Keyboard & Dead Pixel Test"
-  description="Free online mic test, webcam test, keyboard test and dead pixel test. Runs in your browser — audio and video never leave your device."
+  title="Mic, Webcam, Speaker, Keyboard & Dead Pixel Test"
+  description={site.description}
   path="/"
   jsonLd={[
     webAppLd(site, {
       category: 'UtilitiesApplication',
       features: [
-        'Microphone test with live level meter and 5-second playback',
+        'Microphone test with live level meter, device details and 5-second recording you can play back or download',
+        'Noise suppression and echo cancellation switches',
         'Webcam test with resolution, frame rate, mirror and snapshot',
-        'Keyboard test with ANSI and ISO layouts',
-        'Full-screen dead pixel test',
+        'Speaker test for left and right channels',
+        'Keyboard test with ANSI and ISO layouts, key rollover count and chatter check',
+        'Full-screen dead pixel test with colours, gradient, checkerboard and backlight bleed screens',
+        'Stuck pixel fixer with photosensitivity warning',
       ],
     }),
     faqLd(faq),
   ]}
 >
   <div class="container-page pt-6 pb-4 sm:pt-8">
-    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Online Mic, Webcam, Keyboard &amp; Dead Pixel Test</h1>
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Online Mic, Webcam, Speaker, Keyboard &amp; Dead Pixel Test</h1>
     <p class="mt-2 mb-5 max-w-3xl text-muted">
-      Check your microphone, camera, keyboard and screen in seconds. Everything runs in your browser — audio and video
+      Check your microphone, camera, speakers, keyboard and screen. Everything runs in your browser — audio and video
       never leave your device.
     </p>
     <DeviceTests />
@@ -76,11 +99,12 @@ const faq = [
     <section aria-labelledby="how-to">
       <h2 id="how-to">How to use the device tests</h2>
       <ol>
-        <li>Choose a tab: <strong>Mic test</strong>, <strong>Webcam test</strong>, <strong>Keyboard test</strong> or <strong>Dead pixel test</strong>. Each tab has its own link you can bookmark or share.</li>
-        <li>For the mic or webcam, press <strong>Start</strong> and allow access when your browser asks.</li>
-        <li>Pick a different microphone or camera from the list if you have more than one.</li>
-        <li>For the keyboard, press each key and watch it light up. Switch to ISO if your Enter key is tall.</li>
-        <li>For the screen, start the test and step through the colours, looking for pixels that don’t change.</li>
+        <li>Choose a tab: <strong>Mic test</strong>, <strong>Webcam test</strong>, <strong>Keyboard test</strong>, <strong>Dead pixel test</strong> or <strong>Speaker test</strong>. Each tab has its own link you can bookmark or share.</li>
+        <li>For the mic or webcam, press <strong>Start</strong> and allow access when your browser asks. Pick a different microphone or camera from the list if you have more than one.</li>
+        <li>For the mic, check the details your browser reports, try noise suppression and echo cancellation on and off, and record a clip to hear yourself. Use <strong>Download recording</strong> to keep it.</li>
+        <li>For speakers, turn the volume down, then play the test sound on the left, the right and both sides.</li>
+        <li>For the keyboard, press each key and watch it light up. Switch to ISO if your Enter key is tall. Hold several keys together to check rollover, and type normally to check for chatter.</li>
+        <li>For the screen, start the test and step through the colours and patterns, looking for pixels that don’t change, banding and light bleeding in at the edges. If you find a stuck pixel, you can try the stuck pixel fixer after reading its warning.</li>
       </ol>
     </section>
 
@@ -88,13 +112,23 @@ const faq = [
       <h2 id="how-it-works">How it works</h2>
       <p>
         The tests use features built into your browser. The microphone test reads the sound level with the Web Audio
-        API, and the webcam test shows the camera feed in a video element on this page. The 5-second recording is
-        stored in your browser’s memory, and snapshots are drawn onto a local canvas — nothing is uploaded.
+        API and shows the settings the browser reports for the microphone track. The webcam test shows the camera feed
+        in a video element on this page. The 5-second recording is stored in your browser’s memory, snapshots are drawn
+        onto a local canvas, and downloads are saved straight from your browser — nothing is uploaded.
+      </p>
+      <p>
+        The speaker test generates its sound with the Web Audio API and sends it to the left channel, the right channel
+        or both. No audio files are loaded.
       </p>
       <p>
         The keyboard test listens for key events and identifies each physical key by its <code>code</code>, so it
-        works whatever language your keyboard is set to. The dead pixel test switches the whole screen to solid colours
-        using full-screen mode where your browser supports it.
+        works whatever language your keyboard is set to. It counts how many keys are held at the same time and flags a
+        key that registers again less than 30 ms after it was released. Browsers round event times, so these checks are
+        a guide rather than a lab measurement.
+      </p>
+      <p>
+        The dead pixel test switches the whole screen to solid colours and test patterns using full-screen mode where
+        your browser supports it. If full screen isn’t available, the test fills the browser window and tells you so.
       </p>
       <p>
         The site’s security settings only allow this site to use your camera and microphone, and block connections to

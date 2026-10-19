@@ -1,3 +1,4 @@
+import { formatLatency, formatSetting, recordingExtension } from '../lib/device';
 import { checkSupport, classifyError, describeProblem, fillDeviceSelect, showProblem, stopStream } from './media';
 
 const RECORD_SECONDS = 5;
@@ -16,6 +17,9 @@ export function initMic() {
   const playback = $<HTMLAudioElement>('mic-playback');
   const problemBox = $<HTMLDivElement>('mic-problem');
   const info = $<HTMLDListElement>('mic-info');
+  const download = $<HTMLAnchorElement>('mic-download');
+  const nsBox = $<HTMLInputElement>('mic-ns');
+  const ecBox = $<HTMLInputElement>('mic-ec');
 
   let stream: MediaStream | null = null;
   let ctx: AudioContext | null = null;
@@ -23,6 +27,8 @@ export function initMic() {
   let heard = false;
   let recorder: MediaRecorder | null = null;
   let recordingUrl: string | null = null;
+  // Bumped by stop(), so a start() still waiting for permission knows it was cancelled.
+  let generation = 0;
 
   if (typeof MediaRecorder === 'undefined') {
     recordStatus.textContent = 'Recording isn’t supported in this browser.';
@@ -39,23 +45,41 @@ export function initMic() {
     showProblem(problemBox, null);
     status.textContent = 'Waiting for permission…';
     startBtn.disabled = true;
+    const gen = generation;
+    let next: MediaStream;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+      next = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+          noiseSuppression: nsBox.checked,
+          echoCancellation: ecBox.checked,
+        },
         video: false,
       });
     } catch (err) {
       startBtn.disabled = false;
+      if (gen !== generation) return;
       status.textContent = 'Microphone not started.';
       showProblem(problemBox, describeProblem(classifyError(err), 'microphone'));
       return;
     }
+    if (gen !== generation) {
+      // Stopped (e.g. the tab was left) while waiting for permission.
+      startBtn.disabled = false;
+      stopStream(next);
+      return;
+    }
+    stream = next;
     const track = stream.getAudioTracks()[0];
     track.addEventListener('ended', () => {
       status.textContent = 'The microphone was disconnected or stopped.';
       stop();
     });
     await fillDeviceSelect(deviceSel, 'audioinput', track.getSettings().deviceId, 'Microphone');
+    if (gen !== generation || !stream) {
+      startBtn.disabled = false;
+      return;
+    }
     deviceSel.disabled = deviceSel.options.length < 2;
 
     startBtn.hidden = true;
@@ -64,18 +88,24 @@ export function initMic() {
     recordBtn.disabled = typeof MediaRecorder === 'undefined';
     heard = false;
     status.textContent = `Listening to “${track.label || 'microphone'}”. Make some noise…`;
-    showSettings(track.getSettings());
+    showSettings(track);
     runMeter(stream);
   }
 
-  function showSettings(s: MediaTrackSettings) {
-    info.hidden = false;
-    const fmt = (v: unknown, unit = '') =>
-      v === undefined ? 'Not reported' : typeof v === 'boolean' ? (v ? 'On' : 'Off') : `${v}${unit}`;
-    info.querySelector('[data-info="sampleRate"]')!.textContent = fmt(s.sampleRate, ' Hz');
-    info.querySelector('[data-info="channelCount"]')!.textContent = fmt(s.channelCount);
-    info.querySelector('[data-info="echoCancellation"]')!.textContent = fmt(s.echoCancellation);
-    info.querySelector('[data-info="noiseSuppression"]')!.textContent = fmt(s.noiseSuppression);
+  function showSettings(track: MediaStreamTrack | null) {
+    const s: MediaTrackSettings & { latency?: number } = track?.getSettings() ?? {};
+    const set = (key: string, text: string) => (info.querySelector(`[data-info="${key}"]`)!.textContent = text);
+    if (!track) {
+      for (const dd of info.querySelectorAll('dd')) dd.textContent = '–';
+      return;
+    }
+    set('label', track.label || 'Not reported by this browser');
+    set('sampleRate', formatSetting(s.sampleRate, ' Hz'));
+    set('channelCount', formatSetting(s.channelCount));
+    set('echoCancellation', formatSetting(s.echoCancellation));
+    set('noiseSuppression', formatSetting(s.noiseSuppression));
+    set('autoGainControl', formatSetting(s.autoGainControl));
+    set('latency', formatLatency(s.latency));
   }
 
   function runMeter(s: MediaStream) {
@@ -109,6 +139,7 @@ export function initMic() {
   }
 
   function stop() {
+    generation++;
     cancelAnimationFrame(raf);
     if (recorder && recorder.state !== 'inactive') recorder.stop();
     stopStream(stream);
@@ -118,6 +149,7 @@ export function initMic() {
     bar.style.transform = 'scaleX(0)';
     levelText.textContent = '–';
     meter.setAttribute('aria-valuenow', '0');
+    showSettings(null);
     if (!startBtn.hidden) return;
     startBtn.hidden = false;
     stopBtn.hidden = true;
@@ -133,10 +165,15 @@ export function initMic() {
     recorder.addEventListener('stop', () => {
       // Kept in memory as a blob: URL; replaced (and freed) on the next recording.
       if (recordingUrl) URL.revokeObjectURL(recordingUrl);
-      const blob = new Blob(chunks, { type: recorder?.mimeType || 'audio/webm' });
+      const type = recorder?.mimeType || 'audio/webm';
+      const blob = new Blob(chunks, { type });
       recordingUrl = URL.createObjectURL(blob);
       playback.src = recordingUrl;
       playback.hidden = false;
+      // Saved straight from browser memory by the download link; nothing is uploaded.
+      download.href = recordingUrl;
+      download.download = `mic-recording.${recordingExtension(type)}`;
+      download.hidden = false;
       recordStatus.textContent = 'Done — press play to listen.';
       recordBtn.disabled = !stream;
     });
@@ -161,6 +198,12 @@ export function initMic() {
     startBtn.focus();
   });
   deviceSel.addEventListener('change', () => void start(deviceSel.value));
+  // Restart with the new processing settings so the difference can be heard in a new recording.
+  for (const box of [nsBox, ecBox]) {
+    box.addEventListener('change', () => {
+      if (stream) void start(deviceSel.value || undefined);
+    });
+  }
   recordBtn.addEventListener('click', record);
   window.addEventListener('pagehide', () => {
     stop();

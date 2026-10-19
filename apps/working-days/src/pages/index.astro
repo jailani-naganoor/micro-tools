@@ -6,19 +6,29 @@ import Faq from '@micro/ui/components/Faq.astro';
 import MoreTools from '@micro/ui/components/MoreTools.astro';
 import { faqLd, webAppLd } from '@micro/ui/lib/seo';
 import Calculator from '../components/Calculator.astro';
+import YearTable from '../components/YearTable.astro';
 import { COUNTRIES } from '../lib/holidays';
 import { site } from '../site.config';
 
 const countryList = COUNTRIES.map((c) => c.name).join(', ');
+const countryCount = COUNTRIES.length;
 
 const faq = [
   {
     q: 'Does the calculator count the start and end dates?',
-    a: 'When counting days between two dates, the start date is always counted and the end date is not, unless you tick “Include the end date”. When adding or subtracting days, the start date itself is not counted, so 1 working day after a Friday is the following Monday (with a Saturday–Sunday weekend).',
+    a: 'You choose. By default the start date is counted and the end date is not. Tick or untick “Include the start date” and “Include the end date” to change this. For Monday to Friday of the same week: both dates included = 5 days, only one included = 4 days, neither = 3 days. A note under the result says how the current count works. To match Excel’s NETWORKDAYS, include both dates. When adding or subtracting days, the start date itself is not counted, so 1 working day after a Friday is the following Monday (with a Saturday–Sunday weekend).',
+  },
+  {
+    q: 'How are working hours calculated?',
+    a: 'Working hours are the number of working days multiplied by the hours in your working day. The default is 8 hours; enter your own figure, including decimals such as 7.5. It doesn’t account for part days, overtime or shift patterns.',
+  },
+  {
+    q: 'How many working days are there in each month of the year?',
+    a: 'The “Working days in [year]” table under the calculator shows working days and hours for each month and the whole year. It uses the country, region, weekend and days off you chose above, and you can switch between this year, the two years before and the two years after.',
   },
   {
     q: 'Which public holidays are included?',
-    a: `National public holidays and bank holidays for ${countryList}. For many countries you can also pick a state or region to add its local holidays. Observances that are not days off, such as Mother’s Day, are not included.`,
+    a: `National public holidays and bank holidays for ${countryList}. For many countries you can also pick a state or region to add its local holidays. Observances that are not days off, such as Mother’s Day, are not included. Holidays based on the Islamic or other lunar calendars are calculated in advance and can differ by a day from the official announcement.`,
   },
   {
     q: 'What happens when a public holiday falls on a weekend?',
@@ -50,15 +60,17 @@ const faq = [
 <BaseLayout
   site={site}
   title="Working Days Calculator – Business Days Between Dates"
-  description="Count working days between two dates or add business days to a date. Includes public holidays for 14 countries and custom weekends. Free."
+  description={`Count working days and hours between two dates, add business days, or see working days per month. Holidays for ${countryCount} countries.`}
   path="/"
   jsonLd={[
     webAppLd(site, {
       category: 'UtilitiesApplication',
       features: [
-        'Count business days between two dates',
+        'Count business days between two dates, with the start and end dates included or not',
         'Add or subtract business days from a date',
-        'Public holidays for 14 countries, with states and regions',
+        'Working hours from a chosen number of hours per day',
+        'Working days per month and per year',
+        `Public holidays for ${countryCount} countries, with states and regions`,
         'Custom weekend patterns and days off',
         'Shareable results',
       ],
@@ -69,14 +81,16 @@ const faq = [
   <div class="container-page pt-6 pb-4 sm:pt-8">
     <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Working Days Calculator</h1>
     <p class="mt-2 mb-5 max-w-3xl text-muted">
-      Count business days between two dates, or add and subtract business days from a date — with public holidays and
-      your own weekend.
+      Count business days and working hours between two dates, or add and subtract business days from a date — with
+      public holidays for {countryCount} countries and your own weekend. See the working days in every month of the year
+      below.
     </p>
     <Calculator />
     <p class="mt-3 text-sm text-muted">
       Public holidays come from the open-source date-holidays dataset. Regional or company holidays may differ — untick
       any you work, or add your own days off.
     </p>
+    <YearTable />
     <AdSlot site={site} placement="result" />
   </div>
 
@@ -85,10 +99,17 @@ const faq = [
       <h2 id="how-to">How to use the working days calculator</h2>
       <ol>
         <li>Choose <strong>Count days between dates</strong> or <strong>Add or subtract days</strong>.</li>
-        <li>Enter your dates, or a start date and the number of working days.</li>
+        <li>
+          Enter your dates, or a start date and the number of working days. Choose whether the start and end dates
+          count, and set your hours per working day to see working hours.
+        </li>
         <li>Pick the country (and state or region) whose public holidays apply, and your weekend days.</li>
         <li>Untick any holidays you work, and add custom days off such as leave or company closures.</li>
         <li>Read the result and breakdown, then use <strong>Copy result</strong> or <strong>Copy link</strong> to share it.</li>
+        <li>
+          Scroll to <strong>Working days in [year]</strong> to see each month’s working days and hours with the same
+          settings, and pick another year if you need it.
+        </li>
       </ol>
     </section>
 
@@ -98,6 +119,11 @@ const faq = [
         The calculator walks through every calendar day in your range. Each day is either a weekend day, a public
         holiday, one of your custom days off, or a working day. Holidays and days off that land on a weekend are only
         counted once, as weekend days.
+      </p>
+      <p>
+        By default the start date is counted and the end date is not, so a range is counted from the start date up to
+        the day before the end date. The two tick boxes let you include or leave out either date. Working hours are
+        simply working days multiplied by your hours per day.
       </p>
       <p>
         Dates are handled as whole calendar days rather than clock times, so results are the same in every time zone

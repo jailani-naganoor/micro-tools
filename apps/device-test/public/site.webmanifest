@@ -1,7 +1,7 @@
 {
-  "name": "Mic, Webcam, Keyboard & Dead Pixel Test",
+  "name": "Mic, Webcam, Speaker, Keyboard & Dead Pixel Test",
   "short_name": "Device Test",
-  "description": "Test your microphone, webcam, keyboard and screen in the browser.",
+  "description": "Test your microphone, webcam, speakers, keyboard and screen in the browser.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -10,7 +10,7 @@ import { chromium } from '@playwright/test';
 
 const SITES = [
   { dir: 'apps/working-days', port: 4501, pages: ['/', '/about/', '/blog/', '/privacy/'] },
-  { dir: 'apps/device-test', port: 4502, pages: ['/', '/#keyboard', '/about/', '/privacy/'] },
+  { dir: 'apps/device-test', port: 4502, pages: ['/', '/#keyboard', '/#speaker', '/#screen', '/about/', '/privacy/'] },
 ];
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 

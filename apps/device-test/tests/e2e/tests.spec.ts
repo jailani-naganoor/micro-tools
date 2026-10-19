@@ -13,7 +13,7 @@ function trackUploads(page: Page) {
 test.describe('home page and tabs', () => {
   test('loads with SEO basics and structured data', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h1')).toHaveText('Online Mic, Webcam, Keyboard & Dead Pixel Test');
+    await expect(page.locator('h1')).toHaveText('Online Mic, Webcam, Speaker, Keyboard & Dead Pixel Test');
     await checkPageBasics(page);
     expect(await jsonLdTypes(page)).toEqual(['Organization', 'WebApplication', 'FAQPage']);
     await expect(page.getByRole('tab', { name: 'Mic test' })).toHaveAttribute('aria-selected', 'true');
@@ -26,6 +26,7 @@ test.describe('home page and tabs', () => {
       ['Webcam test', '#webcam', 'Webcam test'],
       ['Keyboard test', '#keyboard', 'Keyboard test'],
       ['Dead pixel test', '#screen', 'Dead pixel test'],
+      ['Speaker test', '#speaker', 'Speaker test'],
       ['Mic test', '#mic', 'Microphone test'],
     ]) {
       await page.getByRole('tab', { name }).click();
@@ -40,6 +41,7 @@ test.describe('home page and tabs', () => {
     ['#webcam', 'Webcam test'],
     ['#keyboard', 'Keyboard test'],
     ['#screen', 'Dead pixel test'],
+    ['#speaker', 'Speaker test'],
   ]) {
     test(`direct link ${hash} opens that tab without scrolling`, async ({ page }) => {
       await page.goto(`/${hash}`);
@@ -55,7 +57,12 @@ test.describe('home page and tabs', () => {
     await expect(page.getByRole('tab', { name: 'Webcam test' })).toBeFocused();
     await expect(page).toHaveURL(/#webcam$/);
     await page.keyboard.press('End');
-    await expect(page.getByRole('tab', { name: 'Dead pixel test' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Speaker test' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/#speaker$/);
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('tab', { name: 'Mic test' })).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.getByRole('tab', { name: 'Speaker test' })).toBeFocused();
     await page.keyboard.press('Home');
     await expect(page.getByRole('tab', { name: 'Mic test' })).toHaveAttribute('aria-selected', 'true');
   });
@@ -231,7 +238,7 @@ test.describe('dead pixel test', () => {
   test('finishes after the last colour', async ({ page }) => {
     await page.goto('/#screen');
     await page.getByRole('button', { name: 'Start dead pixel test' }).click();
-    for (let i = 0; i < 9; i++) await page.keyboard.press('ArrowRight');
+    for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowRight');
     await expect(page.locator('#screen-overlay')).toBeHidden();
     await expect(page.locator('#screen-status')).toContainText('finished');
   });

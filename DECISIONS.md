@@ -29,10 +29,14 @@ and can be revisited.
 
 ## Working Days Calculator
 
-9. **Counting convention.** "Between" counts from the start date (always included) up to the end
-   date (excluded unless "Include the end date" is ticked), like many online date calculators.
-   Excel's `NETWORKDAYS` counts both dates, so tick the box to match it. **Add/subtract** never
-   counts the start date (1 working day after Friday is Monday), like Excel's `WORKDAY`.
+9. **Counting convention.** "Between" counts from the start date up to the end date. By default
+   the start date is included and the end date is not, like many online date calculators. Two tick
+   boxes, "Include the start date" and "Include the end date", change this: for Monday to Friday of
+   one week, both = 5 days, one of them = 4, neither = 3. A one-day range (start = end) counts 1 only
+   when both are included, so the default still gives 0, as before. Excel's `NETWORKDAYS` counts both
+   dates, so tick both boxes to match it. A note under the result explains the current count in
+   words. **Add/subtract** never counts the start date (1 working day after Friday is Monday), like
+   Excel's `WORKDAY`.
 10. **Reversed dates are swapped** and the result shows a note, rather than a negative number.
 11. **Holidays on weekends** count once, as weekend days. Substitute or observed days come from
     the date-holidays data where the country defines them.
@@ -66,6 +70,41 @@ and can be revisited.
     (`src/data/holidays/README.md`).
 22. **Copy result** copies a plain-text summary plus the share link. "Copy link" was added too.
 
+
+### Working Days improvements (branch `improvements-1`)
+
+46. **Start date in the URL.** The start date is included by default, so `incs=0` is only written
+    when it is unticked. Links made before this change have no `incs` and behave exactly as before.
+47. **Working hours** = working days × hours per day, rounded to two decimals. Hours per day accepts
+    0.25–24, decimals allowed (`hours=7.5`). The default of 8 is not written to the URL. Add mode
+    shows hours for the requested number of working days. It doesn't model part days or shifts.
+48. **"Working days in [year]" table** sits directly under the calculator (above the result ad
+    slot, so no ad sits beside its controls). It uses the same country, region, weekend, unticked
+    holidays and custom days off as the calculator, and counts every day of each month (the start/end
+    tick boxes don't apply). The year selector offers the current year ±2 and defaults to the current
+    year; the chosen year is not stored in the URL. The table is rendered with placeholder cells so
+    filling it in causes no layout shift.
+49. **Country list is alphabetical** now that there are 41 countries. The default still comes from
+    the browser language (#16).
+50. **Countries added (27):** Austria, Bahrain, Belgium, Croatia, Czechia, Denmark, Finland, Greece,
+    Hong Kong, Hungary, Indonesia, Italy, Kenya, Luxembourg, Malaysia, Netherlands, Nigeria, Norway,
+    Pakistan, Poland, Portugal, Romania, Slovakia, Sri Lanka, Sweden, Switzerland and Thailand. Each
+    one passes the "matches the full date-holidays package" test for every region and seven sample
+    years. Files are 1–15 KB each and still lazy-loaded; the initial calculator script is about
+    24 KB (was 18 KB) because of the new features, not the data.
+51. **Countries left out:**
+    - **Not in date-holidays 3.37.0:** Qatar, Kuwait, Oman, Nepal.
+    - **Saudi Arabia:** the data has one day each for Eid al-Fitr and Eid al-Adha, while the official
+      Eid breaks are several days, so counts would be clearly too high.
+    - **Vietnam:** only two days are listed for Tết (Lunar New Year), while the official break is
+      several days.
+    - **Bangladesh:** the data still lists holidays such as National Mourning Day (15 August) that
+      we could not confirm are current days off.
+    These can be added later if the data improves, or by overriding the rules in the build script.
+52. **Lunar and Islamic holidays** (Malaysia, Indonesia, Pakistan, Bahrain, UAE, Sri Lanka, …) are
+    calculated in advance by date-holidays. Official dates are often confirmed close to the day and
+    can differ by one day. The FAQ says so; users can untick a holiday and add a day off.
+
 ## Device Test
 
 23. **Site name "Device Test"** (short, for the header); the H1 and title carry the keywords.
@@ -98,6 +137,56 @@ and can be revisited.
 33. **Browser fix steps** cover Chrome, Edge, Firefox, Safari (Mac), Safari (iPhone/iPad), Chrome
     (Android) and OS privacy settings (Windows 11, macOS). They are worded to survive small UI
     changes. See the manual checks in TESTING.md.
+
+### Device Test improvements (branch `improvements-1`)
+
+53. **Speaker tab** is the fifth tab, at the end (`#speaker`). The tab bar is 3 columns on phones and
+    5 from the `sm` breakpoint. The test sound is a short three-note sine chime (C5–E5–G5, about 1 s)
+    generated with the Web Audio API at a moderate gain. Left and right go through a
+    `ChannelMerger`, so each side is fully separate rather than panned. No audio files are loaded.
+54. **Noise suppression and echo cancellation toggles** restart the microphone with the new
+    constraints. To hear the difference, record and play back a clip; there is no live monitoring,
+    which would cause feedback through speakers. The details panel shows what the browser actually
+    applied.
+55. **Microphone details panel** is always visible ("–" until started) so the layout doesn't jump.
+    Values the browser doesn't report show "Not reported by this browser". Latency is shown in ms.
+56. **Download recording** is a link styled as a button (`<a download>`) pointing at the in-memory
+    `blob:` recording. The file extension follows the recorder's format (webm, ogg, m4a or wav).
+    Nothing is uploaded, and the existing CSP (`media-src blob:`) needed no change.
+57. **Chatter** means a key that registers again less than 30 ms after its own release.
+    Auto-repeat and keys still held are ignored. **"Most keys at once"** counts keys reported as held
+    together. On macOS, releasing ⌘ clears the held count, because macOS drops keyup events while ⌘
+    is held. The page makes no claim about polling rate.
+58. **Touch-only devices** are detected with `(pointer: coarse) and (hover: none) and not
+    (any-pointer: fine)`. They see a message and an "I have a keyboard connected" button instead of
+    the test. A physical key press reveals the test automatically. Keys reported as "Unidentified"
+    or keyCode 229 (typical of on-screen keyboards) don't count as physical presses. An iPad with a
+    trackpad keyboard reports a fine pointer, so it gets the test straight away.
+59. **Screen test has 12 steps.** The original 9 colours are followed by a grayscale gradient
+    (banding), a checkerboard (16 px squares) and a final "Black for backlight bleed" step. The first
+    black screen was kept, so the existing colour order didn't change. The three new steps show a
+    4-second tip. The cursor is hidden on every step. During the test the page background matches
+    the pattern, so notch and browser-bar areas match too.
+60. **Fullscreen fallback.** The standard API is tried first, then the `webkit` prefix. If both fail
+    or neither exists, the test fills the browser window and says so, both on screen during the test
+    and in a note under the Start button afterwards. The **iPhone tip** (rotate to landscape, or Add
+    to Home Screen) shows only on iPhone/iPod, and not when the site is already opened from the Home
+    Screen.
+61. **Manifest stays `display: standalone`.** iOS doesn't support `fullscreen`, and on Android it
+    would hide the status bar on every page of the site, not just during the test.
+62. **Stuck pixel fixer:**
+    - It flashes red, green, blue, white and black, changing once per animation frame.
+    - Box sizes are 64, 128 (default) and 256 px.
+    - It never starts on its own. A native `<dialog>` shows a photosensitive epilepsy warning, and
+      the fixer starts only after the user ticks a confirmation box and presses Start. With
+      `prefers-reduced-motion: reduce` the warning also notes that setting, and a second
+      confirmation box is required.
+    - Esc, Enter, Space, or a click or tap that moves less than 6 px stops it. Dragging moves the
+      box, and so do the arrow keys (Shift for bigger steps).
+    - It has no automatic time limit; the page suggests short sessions.
+    - The text explains dead vs stuck pixels and says the fixer can't revive dead pixels.
+63. **Mic race fixed:** leaving the Mic tab while the permission prompt or device list was still
+    pending used to throw an error. It is now ignored safely.
 
 ## SEO, privacy and ads
 
