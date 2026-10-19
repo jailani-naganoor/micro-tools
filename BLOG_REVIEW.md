@@ -22,31 +22,45 @@ A fact-check of the 10 draft blog posts (5 per site), done on 19 October 2026 on
     rollover and chatter checks, the phone keyboard message, the 12-step screen test with
     fullscreen fallback and iPhone tip, and the stuck pixel fixer with its photosensitivity warning.
 
-## Things to check by hand before publishing
+## Resolved after your manual check
 
-1. **UK, Christmas 2027:** Monday 27 December 2027 as the Christmas Day substitute wasn't confirmed
-   from a current GOV.UK extract (Tuesday 28 December 2027 was). Check gov.uk/bank-holidays.
-2. **Gulf weekends:** the Friday–Saturday weekends for Qatar, Kuwait and Bahrain rest on reputable
-   news reports, not government pages. Israel's Sunday–Thursday week has no single official source.
-3. **USPS on Veterans Day 2026:** USPS hadn't published its 2026 notice, so the post describes
-   recent years.
-4. **Google Sheets with reversed dates:** no Google page confirms that `NETWORKDAYS` returns a
-   negative number when the dates are reversed, so the post now says this only for Excel.
-5. **Keyboards:**
-   - The "six keys" limit of the USB boot keyboard format came from secondary sources only.
-   - Debounce and other chatter fixes are forum advice only, so the post words them cautiously.
-6. **Monitors:** we found the ISO 9241-307 pixel-fault classes on vendor policy pages, not in the
-   standard itself, so the post states no numbers.
-7. **Browser and OS paths:**
-   - The current Microsoft Edge menu path for site permissions.
-   - Whether macOS needs the browser restarted after changing camera permission.
-   - The Windows 11 option to let several apps use the camera, which was left out.
-8. **On-site fix steps (not changed in this PR):**
-   - Chrome: our error box says "site controls icon", but Google's help calls it the "site
-     information" icon.
-   - Edge: "lock icon › Permissions for this site" couldn't be confirmed from Microsoft's docs.
+After the first review, you checked the open items by hand. These changes follow your decisions. Where the per-post notes further down say otherwise, this section is the current one.
 
-   It's worth checking both in the browsers and updating `ProblemBox.astro` if needed.
+1. **UK, Christmas 2027** (`public-holiday-falls-on-weekend.md`): the post keeps Monday 27 December
+   2027 (Christmas Day substitute) and Tuesday 28 December 2027 (Boxing Day substitute). It now
+   says these apply in England, Wales, Scotland and Northern Ireland, and adds a "check GOV.UK for
+   the official list" note linking to gov.uk/bank-holidays.
+2. **Qatar, Kuwait, Bahrain** (`weekend-patterns-around-the-world.md`): each is now worded as "the
+   official weekend is Friday–Saturday; some private businesses may differ."
+3. **USPS, Veterans Day 2026** (`how-to-add-business-days-to-a-date.md`): the post now says post
+   offices are closed on Wednesday 11 November 2026 with no regular delivery, plus a "check
+   usps.com for the latest" note. The earlier "in recent years" and Priority Mail Express wording
+   was removed.
+4. **Microsoft Edge steps:**
+   - Changed in `microphone-not-working-windows-mac.md`, `webcam-not-working-in-browser.md` and the
+     on-site error box (`apps/device-test/src/components/ProblemBox.astro`).
+   - New wording: select the lock icon in the address bar and set Camera/Microphone to Allow, or open
+     `edge://settings/content/camera` (or `/microphone`) and make sure the site is listed under
+     Allow.
+   - All three now name the settings section as Cookies and site permissions › Site permissions.
+   - "Permissions for this site" and the old "Privacy, search, and services" path were removed.
+5. **Google Chrome, on-site steps** (`ProblemBox.astro`): "site controls icon" is now "site
+   information icon (to the left of the web address)", matching Google's help. The blog posts
+   already used "site information icon".
+
+## Still open
+
+These are claims kept in the posts in cautious wording, or deliberately left out, that no
+official source confirmed:
+
+- The "six keys" limit of the USB boot keyboard format came from secondary sources only.
+- Debounce and other chatter fixes are forum advice only, and the post words them cautiously.
+- We found the ISO 9241-307 pixel-fault classes on vendor policy pages, not in the standard
+  itself, so the post states no numbers.
+- Whether macOS needs the browser restarted after changing camera permission.
+- The Windows 11 option to let several apps use the camera, which was left out.
+- No Google page confirms that Sheets' `NETWORKDAYS` returns a negative number for reversed dates,
+  so the post says this only for Excel.
 
 ---
 
@@ -375,6 +389,8 @@ All five posts keep `draft: true`. `updatedDate: 2026-10-19` added to each (the 
 - "Avoid spraying liquid directly on the camera": general cleaning advice, kept.
 
 ## Notes on on-site fix steps (ProblemBox)
+
+**Update:** both points below are now fixed in `ProblemBox.astro` (see "Resolved after your manual check", items 4 and 5).
 None of the official sources showed ProblemBox to be wrong. I didn't edit ProblemBox. Minor wording notes:
 - **Chrome desktop:** ProblemBox says "site controls icon". Chrome Help extracts call it "View site information" / site information icon. Both describe the icon to the left of the address bar. You may want to say "site information (site controls) icon".
 - **Edge:** ProblemBox says "lock icon > Permissions for this site". I couldn't confirm that label from Microsoft extracts, which only cover the Settings path (Privacy, search, and services > Site permissions, or the older Cookies and site permissions). It's worth a manual check in current Edge.
