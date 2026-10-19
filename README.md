@@ -73,7 +73,7 @@ Set these in `apps/<site>/.env` locally (see `.env.example`) or in Cloudflare Pa
 | `DEVICE_TEST_URL` | `https://device-test.example.com` | Link from the calculator to Device Test. |
 | `CONTACT_EMAIL` | `hello@example.com` | Shown on `/contact/`, privacy and terms pages. |
 | `PUBLISHER_NAME` | `Micro Tools` | Copyright line, JSON-LD organisation and legal pages. |
-| `SHOW_DRAFTS` | `false` | `true` renders `draft: true` blog posts (with `noindex`) for local review. Never set it in production. |
+| `SHOW_DRAFTS` | `false` | `true` (or `1`, `yes`, `on`; quotes are ignored) renders `draft: true` blog posts (with `noindex`, never in the sitemap) for review. Set it only in the Cloudflare Pages **Preview** environment or a local `.env`, never in Production. The build log prints a line such as `SHOW_DRAFTS="true": on → blog drafts included`, so you can check that the variable reached the build. |
 | `PUBLIC_ADS_ENABLED` | `false` | Turns on ad slots, the AdSense loader and the AdSense CSP sources. Needs `PUBLIC_ADSENSE_CLIENT` too. |
 | `PUBLIC_ADSENSE_CLIENT` | empty | AdSense publisher ID, e.g. `ca-pub-1234567890123456`. Also writes `ads.txt`. |
 | `PUBLIC_ADSENSE_SLOT_RESULT` / `_CONTENT` / `_SIDEBAR` | empty | Optional ad unit IDs for the three placements. |

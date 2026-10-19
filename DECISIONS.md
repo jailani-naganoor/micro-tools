@@ -188,6 +188,16 @@ and can be revisited.
 63. **Mic race fixed:** leaving the Mic tab while the permission prompt or device list was still
     pending used to throw an error. It is now ignored safely.
 
+### Blog drafts on preview builds
+
+64. **`SHOW_DRAFTS` is read from `process.env` at build time**, through `getEnv()`, not
+    `import.meta.env`. Values set in the hosting dashboard win over a local `.env`. A value is "on"
+    for `1`, `true`, `yes` or `on` in any case, after trimming spaces and one pair of surrounding
+    quotes, because a dashboard keeps a value typed as `"true"` literally. Anything else is off,
+    and an unrecognised value is flagged with a warning in the build log. Each build logs whether
+    drafts are included, and on Cloudflare Pages it also logs the branch. A unit test builds both
+    sites with the variable on and off, using the same npm workspace command Cloudflare runs.
+
 ## SEO, privacy and ads
 
 34. **Drafts aren't built at all** in production: no page, no sitemap entry, no link. The blog
