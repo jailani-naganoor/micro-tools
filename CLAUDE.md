@@ -56,7 +56,7 @@ not in `public/`.
   count. `aliases.mjs` swaps moment-timezone for a UTC-only shim and trims the astronomia index.
   The unit test "matches the full date-holidays package" proves the browser build gives identical
   results. Run it after any change there.
-- URL query parameters are the share format (`mode, start, end, inc, days, op, country, region,
+- URL query parameters are the share format (`mode, start, end, incs, inc, hours, days, op, country, region,
   weekend, weekdays, skip, off`). Keep them backwards compatible.
 
 ## Device test specifics

@@ -138,6 +138,56 @@ and can be revisited.
     (Android) and OS privacy settings (Windows 11, macOS). They are worded to survive small UI
     changes. See the manual checks in TESTING.md.
 
+### Device Test improvements (branch `improvements-1`)
+
+53. **Speaker tab** is the fifth tab, at the end (`#speaker`). The tab bar is 3 columns on phones and
+    5 from the `sm` breakpoint. The test sound is a short three-note sine chime (C5–E5–G5, about 1 s)
+    generated with the Web Audio API at a moderate gain. Left and right go through a
+    `ChannelMerger`, so each side is fully separate rather than panned. No audio files are loaded.
+54. **Noise suppression and echo cancellation toggles** restart the microphone with the new
+    constraints. To hear the difference, record and play back a clip; there is no live monitoring,
+    which would cause feedback through speakers. The details panel shows what the browser actually
+    applied.
+55. **Microphone details panel** is always visible ("–" until started) so the layout doesn't jump.
+    Values the browser doesn't report show "Not reported by this browser". Latency is shown in ms.
+56. **Download recording** is a link styled as a button (`<a download>`) pointing at the in-memory
+    `blob:` recording. The file extension follows the recorder's format (webm, ogg, m4a or wav).
+    Nothing is uploaded, and the existing CSP (`media-src blob:`) needed no change.
+57. **Chatter** means a key that registers again less than 30 ms after its own release.
+    Auto-repeat and keys still held are ignored. **"Most keys at once"** counts keys reported as held
+    together. On macOS, releasing ⌘ clears the held count, because macOS drops keyup events while ⌘
+    is held. The page makes no claim about polling rate.
+58. **Touch-only devices** are detected with `(pointer: coarse) and (hover: none) and not
+    (any-pointer: fine)`. They see a message and an "I have a keyboard connected" button instead of
+    the test. A physical key press reveals the test automatically. Keys reported as "Unidentified"
+    or keyCode 229 (typical of on-screen keyboards) don't count as physical presses. An iPad with a
+    trackpad keyboard reports a fine pointer, so it gets the test straight away.
+59. **Screen test has 12 steps.** The original 9 colours are followed by a grayscale gradient
+    (banding), a checkerboard (16 px squares) and a final "Black for backlight bleed" step. The first
+    black screen was kept, so the existing colour order didn't change. The three new steps show a
+    4-second tip. The cursor is hidden on every step. During the test the page background matches
+    the pattern, so notch and browser-bar areas match too.
+60. **Fullscreen fallback.** The standard API is tried first, then the `webkit` prefix. If both fail
+    or neither exists, the test fills the browser window and says so, both on screen during the test
+    and in a note under the Start button afterwards. The **iPhone tip** (rotate to landscape, or Add
+    to Home Screen) shows only on iPhone/iPod, and not when the site is already opened from the Home
+    Screen.
+61. **Manifest stays `display: standalone`.** iOS doesn't support `fullscreen`, and on Android it
+    would hide the status bar on every page of the site, not just during the test.
+62. **Stuck pixel fixer:**
+    - It flashes red, green, blue, white and black, changing once per animation frame.
+    - Box sizes are 64, 128 (default) and 256 px.
+    - It never starts on its own. A native `<dialog>` shows a photosensitive epilepsy warning, and
+      the fixer starts only after the user ticks a confirmation box and presses Start. With
+      `prefers-reduced-motion: reduce` the warning also notes that setting, and a second
+      confirmation box is required.
+    - Esc, Enter, Space, or a click or tap that moves less than 6 px stops it. Dragging moves the
+      box, and so do the arrow keys (Shift for bigger steps).
+    - It has no automatic time limit; the page suggests short sessions.
+    - The text explains dead vs stuck pixels and says the fixer can't revive dead pixels.
+63. **Mic race fixed:** leaving the Mic tab while the permission prompt or device list was still
+    pending used to throw an error. It is now ignored safely.
+
 ## SEO, privacy and ads
 
 34. **Drafts aren't built at all** in production: no page, no sitemap entry, no link. The blog
