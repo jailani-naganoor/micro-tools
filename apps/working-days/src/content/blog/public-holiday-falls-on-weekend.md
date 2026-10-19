@@ -42,10 +42,12 @@ Caveats:
 
 In the UK, when a bank holiday falls on a weekend, a substitute weekday is normally declared, usually the following Monday. When two holidays fall on the same weekend, such as Christmas Day and Boxing Day, the substitutes run on consecutive weekdays.
 
-Examples for England and Wales:
+Examples:
 
-- In 2026, Christmas Day is a Friday and Boxing Day is a Saturday, so **Monday 28 December 2026** is the substitute for Boxing Day.
-- In 2027, Christmas Day is a Saturday and Boxing Day a Sunday, so the substitutes are **Monday 27 and Tuesday 28 December 2027**.
+- In 2026, Christmas Day is a Friday and Boxing Day is a Saturday, so in England and Wales **Monday 28 December 2026** is the substitute for Boxing Day.
+- In 2027, Christmas Day is a Saturday and Boxing Day a Sunday. In England, Wales, Scotland and Northern Ireland, **Monday 27 December 2027** is the substitute for Christmas Day and **Tuesday 28 December 2027** is the substitute for Boxing Day.
+
+Check [GOV.UK](https://www.gov.uk/bank-holidays) for the official list before relying on these dates.
 
 Points to keep in mind:
 

@@ -21,9 +21,9 @@ Even in these countries, not everyone works Monday to Friday. Retail, hospitalit
 Several countries in the Middle East use a Friday–Saturday weekend, with the working week running from Sunday to Thursday. Examples include:
 
 - **Saudi Arabia**
-- **Qatar**
-- **Kuwait**
-- **Bahrain**
+- **Qatar:** the official weekend is Friday–Saturday; some private businesses may differ.
+- **Kuwait:** the official weekend is Friday–Saturday; some private businesses may differ.
+- **Bahrain:** the official weekend is Friday–Saturday; some private businesses may differ.
 - **Oman**
 
 Saudi Arabia and Oman both moved to Friday–Saturday in 2013, having previously used a Thursday–Friday weekend. Bahrain and Qatar had made the same switch earlier in the 2000s, and Kuwait's government did so in 2007. These are the official or government weekends; private employers in some of these countries set their own rest days.

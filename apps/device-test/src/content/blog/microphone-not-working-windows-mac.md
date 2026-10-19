@@ -60,7 +60,7 @@ If the app isn't in the list, it hasn't asked for microphone access yet. Open it
 If the microphone works in other apps but not on a website, the browser may be blocking that site.
 
 - **Chrome:** Click the site information icon at the left of the address bar and set **Microphone** to **Allow**. You can also go to **Settings > Privacy and security > Site settings > Microphone**, where you can also choose which microphone Chrome uses by default.
-- **Edge:** Click the icon at the left of the address bar, or go to **Settings > Privacy, search, and services > Site permissions** and open **Microphone**. In older versions this section was called **Cookies and site permissions**.
+- **Edge:** Select the lock icon in the address bar and set **Microphone** to **Allow**, or open `edge://settings/content/microphone` and make sure this site is listed under **Allow**. In Edge Settings this is under **Cookies and site permissions > Site permissions**.
 - **Firefox:** Click the permissions icon at the left of the address bar and click the **×** next to **Blocked** so Firefox asks again, or go to **Settings > Privacy & Security**, scroll to **Permissions** and click **Settings** next to **Microphone**.
 - **Safari (Mac):** With the site open, choose **Safari > Settings for This Website**, or go to **Safari > Settings > Websites > Microphone**.
 

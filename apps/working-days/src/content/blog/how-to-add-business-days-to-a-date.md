@@ -74,7 +74,7 @@ For example, an order placed on Friday 6 November 2026 before the cut-off, with 
 - Dispatch within 2 business days: Monday 9 (1), Tuesday 10 (2). Dispatched by **Tuesday 10 November**.
 - Delivery in 3–5 business days after dispatch: between **Friday 13 and Tuesday 17 November**.
 
-That assumes a Monday-to-Friday carrier and no holidays. Public holidays can affect carriers differently from offices. In the United States, for example, Veterans Day (Wednesday 11 November 2026) is a federal holiday. In recent years the US Postal Service has closed post offices and paused regular mail delivery on Veterans Day (Priority Mail Express still runs), while UPS lists normal pickup and delivery for Veterans Day 2026, apart from services handed to the Postal Service. So a US order could arrive a day later depending on the carrier. Each carrier publishes its own holiday schedule.
+That assumes a Monday-to-Friday carrier and no holidays. Public holidays can affect carriers differently from offices. In the United States, for example, Veterans Day (Wednesday 11 November 2026) is a federal holiday. US post offices are closed on Wednesday 11 November 2026 and there is no regular mail delivery that day (check [usps.com](https://www.usps.com/) for the latest), while UPS lists normal pickup and delivery for Veterans Day 2026, apart from services handed to the Postal Service. So a US order could arrive a day later depending on the carrier. Each carrier publishes its own holiday schedule.
 
 ## Using a spreadsheet
 

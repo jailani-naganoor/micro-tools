@@ -26,8 +26,8 @@ If you clicked "Block" by mistake in the past, the browser remembers that choice
 
 ### Microsoft Edge
 
-1. Click the icon at the left of the address bar and allow **Camera**.
-2. Or go to **Settings > Privacy, search, and services > Site permissions** and open **Camera**. In older versions this was under **Cookies and site permissions**.
+1. Select the lock icon in the address bar and set **Camera** to **Allow**, then reload the page.
+2. Or open `edge://settings/content/camera` and make sure this site is listed under **Allow**. In Edge Settings this is under **Cookies and site permissions > Site permissions**.
 
 ### Mozilla Firefox
 
