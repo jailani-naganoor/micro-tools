@@ -8,6 +8,7 @@ test('tests work under the production CSP and Permissions-Policy', async ({ page
   await page.goto('/#mic');
   await page.getByRole('button', { name: 'Start microphone' }).click();
   await expect(page.locator('#mic-info')).toBeVisible();
+  await expect(page.locator('#mic-status')).toContainText(/Listening|Sound detected/);
   await page.getByRole('tab', { name: 'Webcam test' }).click();
   await page.getByRole('button', { name: 'Start camera' }).click();
   await expect(page.locator('#cam-res')).toHaveText(/\d+ × \d+/);
@@ -17,4 +18,13 @@ test('tests work under the production CSP and Permissions-Policy', async ({ page
   await page.getByRole('button', { name: 'Start dead pixel test' }).click();
   await page.keyboard.press('Escape');
   await expect(page.locator('#screen-overlay')).toBeHidden();
+  await page.getByRole('button', { name: 'Start stuck pixel fixer…' }).click();
+  await page.getByLabel('I have read the warning').check();
+  await page.getByRole('button', { name: 'Start flashing box' }).click();
+  await expect(page.locator('#fixer-layer')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#fixer-layer')).toBeHidden();
+  await page.getByRole('tab', { name: 'Speaker test' }).click();
+  await page.getByRole('button', { name: 'Play both' }).click();
+  await expect(page.locator('#speaker-status')).toContainText('both speakers');
 });

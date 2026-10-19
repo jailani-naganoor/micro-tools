@@ -3,7 +3,7 @@ import { test, expect, expectAccessible } from '@micro/ui/testing/fixtures';
 for (const colorScheme of ['light', 'dark'] as const) {
   test.describe(`${colorScheme} theme`, () => {
     test.use({ colorScheme });
-    for (const path of ['/#mic', '/#webcam', '/#keyboard', '/#screen', '/about/', '/privacy/']) {
+    for (const path of ['/#mic', '/#webcam', '/#keyboard', '/#screen', '/#speaker', '/about/', '/privacy/']) {
       test(`no WCAG A/AA violations on ${path}`, async ({ page }) => {
         await page.goto(path);
         await page.waitForLoadState('networkidle');
