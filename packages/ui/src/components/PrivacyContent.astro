@@ -1,0 +1,111 @@
+---
+// Privacy policy text shared by both sites. It is rendered from the current env flags,
+// so it always describes what the build actually loads. Sections marked
+// "REVIEW BEFORE ENABLING" must be checked by the site owner before ads/analytics go live.
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  lastUpdated: string;
+}
+const { site, lastUpdated } = Astro.props;
+const { adsEnabled, cfAnalyticsToken, contactEmail } = site.env;
+---
+
+<p><strong>Last updated:</strong> {lastUpdated}</p>
+
+<h2>Summary</h2>
+<ul>
+  <li>You do not need an account, and there are no forms to fill in.</li>
+  <li>The tool runs entirely in your browser. What you enter or test is not sent to us.</li>
+  {
+    adsEnabled ? (
+      <li>This site shows ads from Google AdSense. See “Advertising” below.</li>
+    ) : (
+      <li>This site does not show ads and does not use advertising or tracking cookies.</li>
+    )
+  }
+  {
+    cfAnalyticsToken ? (
+      <li>We count visits with Cloudflare Web Analytics, which does not use cookies.</li>
+    ) : (
+      <li>We do not run any analytics.</li>
+    )
+  }
+</ul>
+
+<h2>Who we are</h2>
+<p>
+  {site.name} is run by {site.publisher}. You can contact us about privacy at{' '}
+  <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+</p>
+
+<h2>How the tool handles your data</h2>
+<slot name="tool" />
+
+<h2>Hosting and server logs</h2>
+<p>
+  The site is hosted on Cloudflare Pages. Like any web host, Cloudflare receives technical information when your
+  browser requests a page — such as your IP address, browser type and the address requested — so it can deliver the
+  site and protect it from abuse. We do not use this information to identify you. See{' '}
+  <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare’s privacy policy</a>.
+</p>
+
+<h2>Cookies and local storage</h2>
+<p>
+  We do not set cookies{adsEnabled ? ' ourselves' : ''}. If you use the light/dark theme button, your choice is saved
+  in your browser’s local storage so the site remembers it. It never leaves your device and you can clear it at any
+  time by clearing site data in your browser.
+</p>
+
+<!-- ===== REVIEW BEFORE ENABLING ANALYTICS: this section switches on with PUBLIC_CF_ANALYTICS_TOKEN ===== -->
+<h2>Analytics</h2>
+{
+  cfAnalyticsToken ? (
+    <p>
+      We use Cloudflare Web Analytics to count page views and measure page speed. It does not use cookies or local
+      storage and does not track you across sites. See{' '}
+      <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>.
+    </p>
+  ) : (
+    <p>We do not currently use any analytics service.</p>
+  )
+}
+
+<!-- ===== REVIEW BEFORE ENABLING ADS: this section switches on with PUBLIC_ADS_ENABLED ===== -->
+<h2>Advertising</h2>
+{
+  adsEnabled ? (
+    <>
+      <p>
+        We use Google AdSense to show ads. Google and its partners may use cookies or similar technologies to show
+        ads and measure their performance. Where the law requires your consent, we ask for it through a consent tool
+        before personalised ads are shown, and you can change your choice at any time with “Cookie settings” at the
+        bottom of every page. By default we tell Google not to use your data for personalised advertising.
+      </p>
+      <p>
+        Learn more in <a href="https://policies.google.com/technologies/partner-sites">how Google uses information
+        from sites that use its services</a>, and manage personalised ads at{' '}
+        <a href="https://adssettings.google.com/">Google Ad Settings</a>.
+      </p>
+    </>
+  ) : (
+    <p>This site does not currently show ads. If that changes, we will update this policy first.</p>
+  )
+}
+
+<h2>Links to other sites</h2>
+<p>We link to other websites. Their privacy practices are their own; please read their policies.</p>
+
+<h2>Children</h2>
+<p>The site is for a general audience and is not directed at children. We do not knowingly collect children’s data.</p>
+
+<h2>Your rights</h2>
+<p>
+  Because we do not collect personal data through the tool, there is usually nothing for us to access, correct or
+  delete. If you have a question or request about your data, including under data protection laws such as the UK or EU
+  GDPR, email <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+</p>
+
+<h2>Changes to this policy</h2>
+<p>If we change how the site handles data, we will update this page and the date at the top.</p>

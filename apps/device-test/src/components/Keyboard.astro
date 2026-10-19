@@ -1,0 +1,70 @@
+---
+import { KEYBOARD_HEIGHT, KEYBOARD_WIDTH, KEYS } from '../lib/keyboard-layout';
+---
+
+<div class="mt-4 overflow-x-auto rounded-lg border border-line bg-bg p-2" tabindex="0" role="region" aria-label="On-screen keyboard (scrollable)">
+  <div
+    id="kb-board"
+    class="relative"
+    data-layout="ansi"
+    aria-hidden="true"
+    style={`width: calc(var(--u) * ${KEYBOARD_WIDTH}); height: calc(var(--u) * ${KEYBOARD_HEIGHT});`}
+  >
+    {
+      KEYS.map((k) => (
+        <div
+          class="kb-key"
+          data-code={k.code}
+          data-only={k.layout}
+          style={`left: calc(var(--u) * ${k.x}); top: calc(var(--u) * ${k.y}); width: calc(var(--u) * ${k.w}); height: calc(var(--u) * ${k.h});`}
+        >
+          <span>{k.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  #kb-board {
+    --u: 2.375rem;
+  }
+  @media (min-width: 64rem) {
+    #kb-board {
+      --u: 2.5rem;
+    }
+  }
+  .kb-key {
+    position: absolute;
+    padding: 2px;
+  }
+  .kb-key span {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--c-border);
+    border-bottom-width: 3px;
+    border-radius: 0.375rem;
+    background: var(--c-surface);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    color: var(--c-fg);
+    user-select: none;
+  }
+  #kb-board[data-layout='ansi'] .kb-key[data-only='iso'],
+  #kb-board[data-layout='iso'] .kb-key[data-only='ansi'] {
+    display: none;
+  }
+  .kb-key.tested span {
+    background: var(--c-accent-soft);
+    border-color: var(--c-accent);
+  }
+  .kb-key.down span {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    color: var(--c-accent-fg);
+  }
+</style>

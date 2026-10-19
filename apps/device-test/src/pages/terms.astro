@@ -1,0 +1,27 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import TermsContent from '@micro/ui/components/TermsContent.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`Terms of Use | ${site.name}`}
+  description="Terms of use for the free online mic, webcam, keyboard and dead pixel tests, including the flashing colours warning."
+  path="/terms/"
+  heading="Terms of Use"
+  crumbs={[{ name: 'Terms', path: '/terms/' }]}
+>
+  <TermsContent site={site} lastUpdated="18 October 2026">
+    <Fragment slot="disclaimer">
+      <p>
+        The tests show what your browser can detect. They help with troubleshooting but cannot diagnose every
+        hardware fault, and results can depend on your browser, operating system and settings.
+      </p>
+      <p>
+        The screen test fills your screen with solid colours that change when you click or press a key. If you are
+        sensitive to changing light or colours, please take care.
+      </p>
+    </Fragment>
+  </TermsContent>
+</PageLayout>

@@ -1,0 +1,46 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { formatPostDate, type BlogPost } from '../lib/blog';
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  posts: BlogPost[];
+  description: string;
+}
+const { site, posts, description } = Astro.props;
+---
+
+<PageLayout
+  site={site}
+  title={`Blog | ${site.name}`}
+  description={description}
+  path="/blog/"
+  heading="Blog"
+  crumbs={[{ name: 'Blog', path: '/blog/' }]}
+  prose={false}
+>
+  <p class="text-muted">{description}</p>
+  {
+    posts.length === 0 ? (
+      <p class="mt-8">No articles have been published yet. Please check back soon.</p>
+    ) : (
+      <ul class="mt-8 space-y-6">
+        {posts.map((post) => (
+          <li>
+            <article>
+              <h2 class="text-xl font-semibold">
+                <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                {post.data.draft && <span class="ml-2 rounded bg-warn px-2 py-0.5 text-xs text-bg">Draft</span>}
+              </h2>
+              <p class="mt-1 text-sm text-muted">
+                <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>{formatPostDate(post.data.pubDate)}</time>
+              </p>
+              <p class="mt-2">{post.data.description}</p>
+            </article>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>

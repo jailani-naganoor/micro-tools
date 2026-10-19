@@ -1,0 +1,4 @@
+# ads.txt — authorised sellers for this site.
+# When you are approved for AdSense, replace the line below with your publisher ID
+# (or set PUBLIC_ADSENSE_CLIENT and the build writes it for you):
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

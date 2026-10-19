@@ -1,0 +1,22 @@
+{
+  "name": "@micro/working-days",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test:e2e": "playwright test",
+    "holidays": "node scripts/build-holiday-data.mjs"
+  },
+  "dependencies": {
+    "@micro/ui": "0.1.0",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.4.0",
+    "date-holidays": "3.37.0",
+    "date-holidays-parser": "3.4.7",
+    "tailwindcss": "4.3.3"
+  }
+}

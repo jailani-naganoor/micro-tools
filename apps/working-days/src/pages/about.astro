@@ -1,0 +1,45 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`About | ${site.name}`}
+  description="About the free Working Days Calculator: what it does, where its public holiday data comes from, and how it handles your data."
+  path="/about/"
+  heading="About the Working Days Calculator"
+  crumbs={[{ name: 'About', path: '/about/' }]}
+>
+  <p>
+    The Working Days Calculator is a free, simple tool for counting business days between two dates and for adding or
+    subtracting business days from a date. It is made for everyday tasks such as working out deadlines, notice
+    periods, delivery estimates and project schedules.
+  </p>
+  <h2>What it does</h2>
+  <ul>
+    <li>Counts working days between two dates, with the option to include the end date.</li>
+    <li>Adds or subtracts working days from a date.</li>
+    <li>Includes public holidays for 14 countries, with states and regions where available.</li>
+    <li>Supports Saturday–Sunday, Friday–Saturday, Sunday-only and custom weekends.</li>
+    <li>Lets you untick holidays and add your own days off.</li>
+    <li>Saves your inputs in the page address so you can share a result.</li>
+  </ul>
+  <h2>Privacy</h2>
+  <p>
+    The calculator runs entirely in your browser. There are no accounts, and your dates are not sent to a server. See
+    the <a href="/privacy/">Privacy Policy</a> for details.
+  </p>
+  <h2>Holiday data and credits</h2>
+  <p>
+    Public holiday rules come from the open-source{' '}
+    <a href="https://github.com/commenthol/date-holidays">date-holidays</a> project by commenthol and contributors. The
+    holiday data is based on Wikipedia articles and is available under{' '}
+    <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>; the code is available under the ISC
+    licence. We use the data as published and do not add or change holidays.
+  </p>
+  <p>
+    Holiday dates can change, and regional, industry or company holidays may not be included. If you spot a mistake,
+    please <a href="/contact/">let us know</a>.
+  </p>
+</PageLayout>

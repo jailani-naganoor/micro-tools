@@ -1,0 +1,25 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import TermsContent from '@micro/ui/components/TermsContent.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`Terms of Use | ${site.name}`}
+  description="Terms of use for the free Working Days Calculator, including how to treat its results and holiday data."
+  path="/terms/"
+  heading="Terms of Use"
+  crumbs={[{ name: 'Terms', path: '/terms/' }]}
+>
+  <TermsContent site={site} lastUpdated="18 October 2026">
+    <Fragment slot="disclaimer">
+      <p>
+        The calculator gives an estimate based on the weekend pattern, public holiday data and days off you choose.
+        Public holidays come from an open-source dataset and may be incomplete, change at short notice, or differ by
+        region, industry or employer. Results are not legal, financial or HR advice. For contracts, court deadlines,
+        payroll or notice periods, check the official rules that apply to you.
+      </p>
+    </Fragment>
+  </TermsContent>
+</PageLayout>

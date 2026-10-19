@@ -1,0 +1,35 @@
+---
+// Reserved-height ad placement. Renders nothing at all unless ads are enabled.
+// Rules: never inside or directly beside tool controls, never sticky, always labelled.
+import type { SiteConfig } from '../lib/types';
+
+interface Props {
+  site: SiteConfig;
+  placement: 'result' | 'content' | 'sidebar';
+  class?: string;
+}
+const { site, placement, class: className = '' } = Astro.props;
+const { adsEnabled, adsenseClient, adSlots } = site.env;
+const heights = {
+  result: 'min-h-[300px]',
+  content: 'min-h-[300px]',
+  sidebar: 'min-h-[620px]',
+};
+---
+
+{
+  adsEnabled && (
+    <aside class:list={['ad-slot my-8', className]} aria-label="Advertisement" data-placement={placement}>
+      <p class="mb-1 text-center text-xs tracking-wide text-muted uppercase">Advertisement</p>
+      <div class:list={['overflow-hidden rounded-lg bg-surface', heights[placement]]}>
+        <ins
+          class:list={['adsbygoogle block', heights[placement]]}
+          data-ad-client={adsenseClient}
+          data-ad-slot={adSlots[placement] || undefined}
+          data-ad-format={placement === 'sidebar' ? 'vertical' : 'auto'}
+          data-full-width-responsive={placement === 'sidebar' ? 'false' : 'true'}
+        />
+      </div>
+    </aside>
+  )
+}

@@ -1,0 +1,21 @@
+---
+import type { FaqItem } from '../lib/types';
+
+interface Props {
+  items: FaqItem[];
+  heading?: string;
+}
+const { items, heading = 'Frequently asked questions' } = Astro.props;
+---
+
+<section aria-labelledby="faq-heading">
+  <h2 id="faq-heading">{heading}</h2>
+  {
+    items.map((item) => (
+      <>
+        <h3>{item.q}</h3>
+        <p>{item.a}</p>
+      </>
+    ))
+  }
+</section>

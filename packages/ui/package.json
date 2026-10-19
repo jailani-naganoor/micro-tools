@@ -1,0 +1,18 @@
+{
+  "name": "@micro/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./lib/*": "./src/lib/*.ts",
+    "./scripts/*": "./src/scripts/*.ts",
+    "./integrations/*": "./src/integrations/*",
+    "./components/*": "./src/components/*",
+    "./layouts/*": "./src/layouts/*",
+    "./styles/*": "./src/styles/*",
+    "./testing/*": "./testing/*.ts"
+  },
+  "peerDependencies": {
+    "astro": "7.4.0"
+  }
+}

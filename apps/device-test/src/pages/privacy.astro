@@ -1,0 +1,42 @@
+---
+import PageLayout from '@micro/ui/layouts/PageLayout.astro';
+import PrivacyContent from '@micro/ui/components/PrivacyContent.astro';
+import { site } from '../site.config';
+---
+
+<PageLayout
+  site={site}
+  title={`Privacy Policy | ${site.name}`}
+  description="How the Device Test site handles your data: microphone and camera tests run in your browser and audio and video never leave your device."
+  path="/privacy/"
+  heading="Privacy Policy"
+  crumbs={[{ name: 'Privacy Policy', path: '/privacy/' }]}
+>
+  <PrivacyContent site={site} lastUpdated="18 October 2026">
+    <Fragment slot="tool">
+      <p>
+        The microphone, webcam, keyboard and screen tests run entirely in your browser. Audio and video from your
+        devices are processed on your device only — they are never uploaded, streamed or stored on any server.
+      </p>
+      <ul>
+        <li>
+          Your browser asks for permission before the site can use your microphone or camera. You can withdraw that
+          permission at any time in your browser settings.
+        </li>
+        <li>
+          The optional 5-second microphone recording is kept in your browser’s memory and is discarded when you
+          record again, leave or reload the page.
+        </li>
+        <li>
+          Webcam snapshots are created in your browser. They are only saved if you choose to download them, and then
+          only to your own device.
+        </li>
+        <li>Key presses in the keyboard test are shown on screen and are not recorded or sent anywhere.</li>
+      </ul>
+      <p>
+        The site’s security settings only allow camera and microphone use by this site itself, and block it from
+        sending data to other servers.
+      </p>
+    </Fragment>
+  </PrivacyContent>
+</PageLayout>

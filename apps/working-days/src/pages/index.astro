@@ -1,0 +1,120 @@
+---
+import BaseLayout from '@micro/ui/layouts/BaseLayout.astro';
+import AdSlot from '@micro/ui/components/AdSlot.astro';
+import ContentWithSidebar from '@micro/ui/components/ContentWithSidebar.astro';
+import Faq from '@micro/ui/components/Faq.astro';
+import MoreTools from '@micro/ui/components/MoreTools.astro';
+import { faqLd, webAppLd } from '@micro/ui/lib/seo';
+import Calculator from '../components/Calculator.astro';
+import { COUNTRIES } from '../lib/holidays';
+import { site } from '../site.config';
+
+const countryList = COUNTRIES.map((c) => c.name).join(', ');
+
+const faq = [
+  {
+    q: 'Does the calculator count the start and end dates?',
+    a: 'When counting days between two dates, the start date is always counted and the end date is not, unless you tick “Include the end date”. When adding or subtracting days, the start date itself is not counted, so 1 working day after a Friday is the following Monday (with a Saturday–Sunday weekend).',
+  },
+  {
+    q: 'Which public holidays are included?',
+    a: `National public holidays and bank holidays for ${countryList}. For many countries you can also pick a state or region to add its local holidays. Observances that are not days off, such as Mother’s Day, are not included.`,
+  },
+  {
+    q: 'What happens when a public holiday falls on a weekend?',
+    a: 'A holiday on a weekend day is counted once, as a weekend day, so it is never deducted twice. Where a country moves the day off to a weekday (a “substitute” or “observed” holiday), that weekday is listed and deducted too.',
+  },
+  {
+    q: 'Can I use a Friday–Saturday or other weekend?',
+    a: 'Yes. Choose Saturday–Sunday, Friday–Saturday or Sunday only, or tick any combination of days to make a custom weekend. At least one day of the week must stay a working day.',
+  },
+  {
+    q: 'How do I add business days to a date?',
+    a: 'Choose “Add or subtract days”, enter the start date and the number of working days, and pick + or −. The result skips weekends, the public holidays you have ticked and any custom days off.',
+  },
+  {
+    q: 'Why might my employer or contract count differently?',
+    a: 'Regional, industry and company holidays vary, and some contracts define “business day” in their own way. Untick holidays you work, add your own days off, and check the official rules for anything legally important.',
+  },
+  {
+    q: 'Is my data saved or sent anywhere?',
+    a: 'No. Everything is calculated in your browser. Your choices are only stored in the page address so you can bookmark or share the result.',
+  },
+  {
+    q: 'Which dates can I use?',
+    a: 'Any date from 1 January 1900 to 31 December 2199. You can add or subtract up to 10,000 working days.',
+  },
+];
+---
+
+<BaseLayout
+  site={site}
+  title="Working Days Calculator – Business Days Between Dates"
+  description="Count working days between two dates or add business days to a date. Includes public holidays for 14 countries and custom weekends. Free."
+  path="/"
+  jsonLd={[
+    webAppLd(site, {
+      category: 'UtilitiesApplication',
+      features: [
+        'Count business days between two dates',
+        'Add or subtract business days from a date',
+        'Public holidays for 14 countries, with states and regions',
+        'Custom weekend patterns and days off',
+        'Shareable results',
+      ],
+    }),
+    faqLd(faq),
+  ]}
+>
+  <div class="container-page pt-6 pb-4 sm:pt-8">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Working Days Calculator</h1>
+    <p class="mt-2 mb-5 max-w-3xl text-muted">
+      Count business days between two dates, or add and subtract business days from a date — with public holidays and
+      your own weekend.
+    </p>
+    <Calculator />
+    <p class="mt-3 text-sm text-muted">
+      Public holidays come from the open-source date-holidays dataset. Regional or company holidays may differ — untick
+      any you work, or add your own days off.
+    </p>
+    <AdSlot site={site} placement="result" />
+  </div>
+
+  <ContentWithSidebar site={site}>
+    <section aria-labelledby="how-to">
+      <h2 id="how-to">How to use the working days calculator</h2>
+      <ol>
+        <li>Choose <strong>Count days between dates</strong> or <strong>Add or subtract days</strong>.</li>
+        <li>Enter your dates, or a start date and the number of working days.</li>
+        <li>Pick the country (and state or region) whose public holidays apply, and your weekend days.</li>
+        <li>Untick any holidays you work, and add custom days off such as leave or company closures.</li>
+        <li>Read the result and breakdown, then use <strong>Copy result</strong> or <strong>Copy link</strong> to share it.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="how-it-works">
+      <h2 id="how-it-works">How it works</h2>
+      <p>
+        The calculator walks through every calendar day in your range. Each day is either a weekend day, a public
+        holiday, one of your custom days off, or a working day. Holidays and days off that land on a weekend are only
+        counted once, as weekend days.
+      </p>
+      <p>
+        Dates are handled as whole calendar days rather than clock times, so results are the same in every time zone
+        and are not affected by daylight-saving changes. Leap years are handled automatically.
+      </p>
+      <p>
+        Public holiday rules come from{' '}
+        <a href="https://github.com/commenthol/date-holidays">date-holidays</a>, an open-source dataset based on
+        Wikipedia and available under{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>. Only holidays marked as public or
+        bank holidays are used. Holidays can change at short notice, so check official sources for important dates.
+      </p>
+    </section>
+
+    <AdSlot site={site} placement="content" />
+
+    <Faq items={faq} />
+    <MoreTools site={site} />
+  </ContentWithSidebar>
+</BaseLayout>

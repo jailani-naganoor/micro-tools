@@ -1,0 +1,171 @@
+@import 'tailwindcss';
+
+/* Scan shared components as well as the app that imports this file. */
+@source '../';
+
+/* Dark mode follows [data-theme], which /head.js sets from the saved choice or the system setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  color-scheme: light;
+  --c-bg: #ffffff;
+  --c-surface: #f4f6f8;
+  --c-surface-2: #e8ecf0;
+  --c-fg: #16191d;
+  --c-muted: #4a5360; /* 7.6:1 on white */
+  --c-border: #c9d0d8;
+  --c-accent: #1a56c4; /* 6.3:1 on white */
+  --c-accent-fg: #ffffff;
+  --c-accent-soft: #e6eefb;
+  --c-ok: #136c35;
+  --c-warn: #8a4b00;
+  --c-danger: #b42318;
+  --c-focus: #1a56c4;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --c-bg: #101317;
+  --c-surface: #181c22;
+  --c-surface-2: #222830;
+  --c-fg: #e9ecef;
+  --c-muted: #aab3be; /* 8.3:1 on bg */
+  --c-border: #39414c;
+  --c-accent: #8bb4ff; /* 8.6:1 on bg */
+  --c-accent-fg: #0b1220;
+  --c-accent-soft: #1b2a45;
+  --c-ok: #6fd394;
+  --c-warn: #f0b45e;
+  --c-danger: #ff8a80;
+  --c-focus: #8bb4ff;
+}
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-border);
+  --color-accent: var(--c-accent);
+  --color-accent-fg: var(--c-accent-fg);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-ok: var(--c-ok);
+  --color-warn: var(--c-warn);
+  --color-danger: var(--c-danger);
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    line-height: 1.55;
+  }
+  a {
+    @apply text-accent underline underline-offset-2;
+  }
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+  :focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+  }
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-semibold text-fg no-underline transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply border-accent bg-accent text-accent-fg hover:bg-accent hover:opacity-90;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-semibold;
+  }
+  .field {
+    @apply block min-h-11 w-full rounded-lg border border-line bg-bg px-3 py-2 text-base text-fg;
+  }
+  .card {
+    @apply rounded-xl border border-line bg-surface p-4 sm:p-6;
+  }
+  .sr-only-focusable:not(:focus) {
+    @apply sr-only;
+  }
+
+  /* Long-form text (legal pages, blog posts, sections below the tool). */
+  .prose {
+    @apply max-w-none text-base;
+  }
+  .prose h2 {
+    @apply mt-10 mb-3 text-2xl font-bold tracking-tight;
+  }
+  .prose h3 {
+    @apply mt-6 mb-2 text-lg font-semibold;
+  }
+  .prose p,
+  .prose ul,
+  .prose ol,
+  .prose table,
+  .prose blockquote {
+    @apply my-4;
+  }
+  .prose ul {
+    @apply list-disc pl-6;
+  }
+  .prose ol {
+    @apply list-decimal pl-6;
+  }
+  .prose li {
+    @apply my-1;
+  }
+  .prose code {
+    @apply rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.9em];
+  }
+  .prose pre {
+    @apply my-4 overflow-x-auto rounded-lg bg-surface-2 p-4 text-sm;
+  }
+  .prose pre code {
+    @apply bg-transparent p-0;
+  }
+  .prose table {
+    @apply block w-full overflow-x-auto border-collapse text-sm sm:table;
+  }
+  .prose th,
+  .prose td {
+    @apply border border-line px-3 py-2 text-left align-top;
+  }
+  .prose th {
+    @apply bg-surface font-semibold;
+  }
+  .prose blockquote {
+    @apply border-l-4 border-line pl-4 text-muted;
+  }
+  .prose > :first-child {
+    @apply mt-0;
+  }
+}
