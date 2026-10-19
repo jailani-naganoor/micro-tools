@@ -100,6 +100,9 @@ depend on `packages/ui`). Optionally set **Build watch paths** so each project o
 its files change: include `apps/working-days/*` (or `apps/device-test/*`), `packages/*`,
 `package.json` and `package-lock.json`.
 
+Pushes to other branches (such as a pull request branch) create preview deployments on
+`*.pages.dev` URLs, which are kept out of search results as described below.
+
 The build writes `dist/_headers` with the security headers, CSP, caching rules and an
 `X-Robots-Tag: noindex` rule for `*.pages.dev` hostnames. A small script in `public/head.js` also
 adds `<meta name="robots" content="noindex">` on `*.pages.dev`, so preview and default URLs don't
