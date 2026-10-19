@@ -9,8 +9,8 @@ import * as chromeLauncher from 'chrome-launcher';
 import { chromium } from '@playwright/test';
 
 const SITES = [
-  { dir: 'apps/working-days', port: 4501, pages: ['/', '/about/', '/blog/', '/privacy/'] },
-  { dir: 'apps/device-test', port: 4502, pages: ['/', '/#keyboard', '/#speaker', '/#screen', '/about/', '/privacy/'] },
+  { dir: 'apps/working-days', port: 4501, pages: ['/', '/about/', '/blog/', '/blog/how-to-add-business-days-to-a-date/', '/privacy/'] },
+  { dir: 'apps/device-test', port: 4502, pages: ['/', '/#keyboard', '/#speaker', '/#screen', '/about/', '/blog/microphone-not-working-windows-mac/', '/privacy/'] },
 ];
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 

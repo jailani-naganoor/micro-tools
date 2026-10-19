@@ -3,7 +3,7 @@
 ## Automated results (19 October 2026, branch `improvements-1`)
 
 Environment: Linux cloud container, Node 22.22.0, npm 10.9.4, Chromium 141 (Playwright 1.56.1),
-Lighthouse 13.5.0. All env flags off (no ads, no analytics, drafts hidden).
+Lighthouse 13.5.0. All env flags off (no ads, no analytics, `SHOW_DRAFTS` unset).
 
 | Check | Command | Result |
 | --- | --- | --- |
@@ -90,7 +90,7 @@ launch (PageSpeed Insights).
   subtract, invalid input, copy result (clipboard content), result above the fold on a 390 px
   phone with no horizontal scroll, theme toggle persistence, keyboard operation of the mode switch.
 - Site: crawls every internal link (all 200), SEO and breadcrumbs on each inner page, truthful
-  privacy text, drafts hidden (post URL is 404), 404 page with `noindex`, `robots.txt`,
+  privacy text, every published post on `/blog/` and in the sitemap without `noindex`, the home page Guides links, 404 page with `noindex`, `robots.txt`,
   `sitemap.xml`, manifest, commented-only `ads.txt`, cookie settings dialog.
 - Production headers: the calculator works under the generated CSP and Permissions-Policy, and the
   CSP blocks an injected inline script.
@@ -109,7 +109,7 @@ launch (PageSpeed Insights).
   arrows don't scroll, count, reset, ISO layout extra key, Tab moves focus (no keyboard trap).
 - Dead pixel: colour cycling by click and arrow keys, Esc exits and returns focus, finishes after
   the last colour.
-- Site: all internal links, inner-page SEO and breadcrumbs, privacy wording, drafts hidden, 404,
+- Site: all internal links, inner-page SEO and breadcrumbs, privacy wording, every published post listed, in the sitemap and indexable, home page Guides links, 404,
   `robots.txt`, `sitemap.xml`, `ads.txt`.
 - Production headers: everything works under `camera=(self)`, `microphone=(self)` and the strict CSP.
 - Accessibility: axe-core on every tab, inner pages, running mic/webcam/keyboard states and the
@@ -123,6 +123,19 @@ launch (PageSpeed Insights).
 - A `SHOW_DRAFTS=true` build: all 10 posts render with the "Draft" label, `noindex` and Article
   JSON-LD, and stay out of the sitemap.
 - Screenshots of both sites at desktop and phone widths, light and dark.
+
+### Blog publishing update (19 October 2026, branch `blog-review-1`)
+
+All 10 posts set to `draft: false`, home pages link to 3 guides each, and `SHOW_DRAFTS` is now
+logged in each build.
+
+| Check | Result |
+| --- | --- |
+| Build, type check, lint | ✅ 0 errors, 0 warnings |
+| Unit tests | ✅ 61/61 (includes `packages/ui/tests/drafts.test.ts`, which builds both sites with and without `SHOW_DRAFTS` using a temporary draft post); the two extra time-zone passes skip the 4 build tests |
+| E2E: Working Days | ✅ 53/53 |
+| E2E: Device Test | ✅ 68/68 |
+| Lighthouse mobile | ✅ 99–100 in every category on all 12 pages (now including one blog post per site), CLS 0. Working Days `/` scored 99 for performance (TBT 81 ms) |
 
 ## Manual test list (for you)
 
@@ -190,13 +203,8 @@ Please run these on real devices and browsers before launch. Tick them off as yo
       extra confirmation appears with Reduce Motion on (macOS, iOS, Windows). One tap stops it,
       dragging works on touch, Esc works.
 
-### Blog drafts (all `draft: true`)
-- [ ] Read all 10 posts and set `draft: false` only on those you approve.
-- [ ] Device posts: check the Windows 11, macOS, Chrome, Firefox and Safari settings paths. The
-      writer verified the Edge path against Microsoft's documentation but wrote the others from
-      knowledge.
-- [ ] Working-days posts: check the Excel/Sheets `NETWORKDAYS`, `NETWORKDAYS.INTL`, `WORKDAY` and
-      `WORKDAY.INTL` syntax and weekend codes, the list of Friday–Saturday countries, the US
-      observed-holiday rule, UK substitute days, and the US Veterans Day shipping example. The UAE
-      2022 weekend change and Australia's 2026 Anzac Day arrangements were checked against official
-      sources by the writer.
+### Blog posts (all 10 published)
+- [ ] Read the published posts on the live site once deployed. [BLOG_REVIEW.md](BLOG_REVIEW.md)
+      lists what was checked, the sources and what was softened.
+- [ ] Spot check the settings paths in the device posts against your own browsers and OS versions;
+      vendor menus change often.

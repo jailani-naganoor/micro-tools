@@ -2,7 +2,8 @@
 title: "Working Days vs Calendar Days in Deadlines"
 description: "How to read deadlines, notice periods and contract terms written in working days or calendar days, and the counting mistakes that catch people out."
 pubDate: 2026-10-18
-draft: true
+updatedDate: 2026-10-19
+draft: false
 ---
 
 "Reply within 10 days." "Notice of four weeks." "Payment due within 14 working days." Phrases like these look precise, but two people can read them and arrive at different dates, usually because of working days versus calendar days, or whether the first day counts. This guide explains how to read a deadline carefully and where the common traps are.
@@ -82,4 +83,4 @@ Minimum notice periods may also be set by law, and the law may differ from what 
 
 ## Checking your dates
 
-For working-day deadlines, a tool helps avoid miscounting. The [working days calculator](/) can add working days to a date or count them between two dates using public holidays for many countries and different weekend patterns. Use it as a check, then confirm the result against your contract and the official holiday calendar.
+For working-day deadlines, a tool helps avoid miscounting. The [working days calculator](/) can add working days to a date or count them between two dates using public holidays for 41 countries and different weekend patterns. When adding days it never counts the start date, which matches the "receipt day does not count" example above. When counting between two dates, use the "Include the start date" and "Include the end date" tick boxes to match the wording you are working to. Use it as a check, then confirm the result against your contract and the official holiday calendar.

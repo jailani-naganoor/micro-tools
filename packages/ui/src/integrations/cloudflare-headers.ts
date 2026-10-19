@@ -4,7 +4,7 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { AstroIntegration } from 'astro';
-import { getEnv } from '../lib/env';
+import { describeFlag, getEnv } from '../lib/env';
 
 export interface HeadersOptions {
   /** Permissions-Policy value for this site. */
@@ -121,6 +121,15 @@ export default function cloudflareHeaders(options: HeadersOptions): AstroIntegra
   return {
     name: 'micro-cloudflare-headers',
     hooks: {
+      'astro:build:start': ({ logger }) => {
+        // Say in the build log whether drafts are included, so a hosting dashboard variable
+        // that didn't reach the build (or has an unexpected value) is easy to spot.
+        const drafts = describeFlag('SHOW_DRAFTS');
+        const where = process.env.CF_PAGES_BRANCH ? ` [Cloudflare Pages branch ${process.env.CF_PAGES_BRANCH}]` : '';
+        const line = `${drafts.message} → blog drafts ${drafts.on ? 'included' : 'hidden'}${where}`;
+        if (drafts.warn) logger.warn(line);
+        else logger.info(line);
+      },
       'astro:build:done': ({ dir, logger }) => {
         const env = getEnv('');
         const ads = env.adsEnabled;
@@ -136,7 +145,9 @@ export default function cloudflareHeaders(options: HeadersOptions): AstroIntegra
           const pub = client.replace(/^ca-/, '');
           writeFileSync(`${out}/ads.txt`, `google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`);
         }
-        logger.info(`wrote _headers (ads ${ads ? 'on' : 'off'}, analytics ${analytics ? 'on' : 'off'})`);
+        logger.info(
+          `wrote _headers (ads ${ads ? 'on' : 'off'}, analytics ${analytics ? 'on' : 'off'}, drafts ${env.showDrafts ? 'shown' : 'hidden'})`,
+        );
       },
     },
   };

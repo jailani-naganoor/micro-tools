@@ -4,6 +4,7 @@ import AdSlot from '@micro/ui/components/AdSlot.astro';
 import ContentWithSidebar from '@micro/ui/components/ContentWithSidebar.astro';
 import Faq from '@micro/ui/components/Faq.astro';
 import MoreTools from '@micro/ui/components/MoreTools.astro';
+import RelatedPosts from '@micro/ui/components/RelatedPosts.astro';
 import { faqLd, webAppLd } from '@micro/ui/lib/seo';
 import DeviceTests from '../components/DeviceTests.astro';
 import { site } from '../site.config';
@@ -139,6 +140,7 @@ const faq = [
     <AdSlot site={site} placement="content" />
 
     <Faq items={faq} />
+    <RelatedPosts slugs={['microphone-not-working-windows-mac', 'webcam-not-working-in-browser', 'dead-pixels-vs-stuck-pixels']} />
     <MoreTools site={site} />
   </ContentWithSidebar>
 </BaseLayout>

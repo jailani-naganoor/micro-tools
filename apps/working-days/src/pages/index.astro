@@ -4,6 +4,7 @@ import AdSlot from '@micro/ui/components/AdSlot.astro';
 import ContentWithSidebar from '@micro/ui/components/ContentWithSidebar.astro';
 import Faq from '@micro/ui/components/Faq.astro';
 import MoreTools from '@micro/ui/components/MoreTools.astro';
+import RelatedPosts from '@micro/ui/components/RelatedPosts.astro';
 import { faqLd, webAppLd } from '@micro/ui/lib/seo';
 import Calculator from '../components/Calculator.astro';
 import YearTable from '../components/YearTable.astro';
@@ -141,6 +142,7 @@ const faq = [
     <AdSlot site={site} placement="content" />
 
     <Faq items={faq} />
+    <RelatedPosts slugs={['count-business-days-between-two-dates', 'how-to-add-business-days-to-a-date', 'public-holiday-falls-on-weekend']} />
     <MoreTools site={site} />
   </ContentWithSidebar>
 </BaseLayout>

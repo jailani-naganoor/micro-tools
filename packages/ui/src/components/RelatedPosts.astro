@@ -1,0 +1,31 @@
+---
+// "Guides" links on a tool's home page. Only published posts are linked, so a post that is
+// switched back to draft simply disappears from the list instead of becoming a broken link.
+import { getPublishedPosts } from '../lib/blog';
+
+interface Props {
+  /** Post ids (file names without .md), in the order to show them. */
+  slugs: string[];
+}
+const { slugs } = Astro.props;
+const published = new Map((await getPublishedPosts(false)).map((p) => [p.id, p]));
+const posts = slugs.flatMap((slug) => published.get(slug) ?? []);
+---
+
+{
+  posts.length > 0 && (
+    <section aria-labelledby="guides-heading">
+      <h2 id="guides-heading">Guides</h2>
+      <ul>
+        {posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}/`}>{post.data.title}</a> — {post.data.description}
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href="/blog/">All articles</a>
+      </p>
+    </section>
+  )
+}

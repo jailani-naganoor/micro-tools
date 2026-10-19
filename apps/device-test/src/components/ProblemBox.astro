@@ -16,7 +16,7 @@ const Kind = kind === 'microphone' ? 'Microphone' : 'Camera';
     <details class="mt-2">
       <summary class="cursor-pointer py-1 font-semibold">Chrome (Windows, Mac, Linux, ChromeOS)</summary>
       <ol class="mt-1 list-decimal space-y-1 pl-5">
-        <li>Click the site controls icon to the left of the address bar.</li>
+        <li>Click the site information icon (to the left of the web address).</li>
         <li>Turn on or set <strong>{Kind}</strong> to <strong>Allow</strong>.</li>
         <li>Reload the page and try again.</li>
       </ol>
@@ -24,8 +24,12 @@ const Kind = kind === 'microphone' ? 'Microphone' : 'Camera';
     <details class="mt-1">
       <summary class="cursor-pointer py-1 font-semibold">Microsoft Edge</summary>
       <ol class="mt-1 list-decimal space-y-1 pl-5">
-        <li>Click the lock icon to the left of the address bar, then <strong>Permissions for this site</strong>.</li>
-        <li>Set <strong>{Kind}</strong> to <strong>Allow</strong>.</li>
+        <li>Select the lock icon in the address bar and set <strong>{Kind}</strong> to <strong>Allow</strong>.</li>
+        <li>
+          Or open <code>edge://settings/content/{kind}</code> and make sure this site is listed under
+          <strong>Allow</strong>. In Edge Settings this is under <strong>Cookies and site permissions › Site
+          permissions</strong>.
+        </li>
         <li>Reload the page and try again.</li>
       </ol>
     </details>

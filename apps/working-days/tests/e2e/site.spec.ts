@@ -1,4 +1,14 @@
-import { test, expect, checkInternalLinks, checkPageBasics, jsonLdTypes } from '@micro/ui/testing/fixtures';
+import {
+  test,
+  expect,
+  checkInternalLinks,
+  checkPageBasics,
+  checkPublishedPosts,
+  jsonLdTypes,
+  publishedPostIds,
+} from '@micro/ui/testing/fixtures';
+
+const BLOG_DIR = new URL('../../src/content/blog/', import.meta.url).pathname;
 
 const INNER = ['/about/', '/contact/', '/privacy/', '/terms/', '/blog/'];
 
@@ -26,10 +36,20 @@ test('privacy policy describes the current state truthfully', async ({ page }) =
   await expect(page.getByText('We do not run any analytics.', { exact: true })).toBeVisible();
 });
 
-test('blog index hides draft posts', async ({ page, request }) => {
-  await page.goto('/blog/');
-  await expect(page.getByText('No articles have been published yet.')).toBeVisible();
-  expect((await request.get('/blog/how-to-add-business-days-to-a-date/')).status()).toBe(404);
+test('every published post is listed, in the sitemap, indexable and links to the tool', async ({ page, request }) => {
+  await checkPublishedPosts(page, request, await publishedPostIds(BLOG_DIR));
+});
+
+test('home page links to 2–3 guides that exist', async ({ page, request }) => {
+  await page.goto('/');
+  const guides = page.locator('section[aria-labelledby="guides-heading"] li a');
+  const count = await guides.count();
+  expect(count).toBeGreaterThanOrEqual(2);
+  expect(count).toBeLessThanOrEqual(3);
+  for (const href of await guides.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
+    expect(href).toMatch(/^\/blog\/[a-z0-9-]+\/$/);
+    expect((await request.get(href)).status(), href).toBe(200);
+  }
 });
 
 test('404 page', async ({ page, guard }) => {
@@ -45,7 +65,6 @@ test('robots.txt, sitemap.xml, manifest and ads.txt', async ({ request }) => {
   expect(robots).toContain('Sitemap: https://');
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const p of ['/', ...INNER]) expect(sitemap).toContain(`${p}</loc>`);
-  expect(sitemap).not.toContain('/blog/how-to');
   const manifest = await (await request.get('/site.webmanifest')).json();
   expect(manifest.icons.length).toBeGreaterThan(1);
   const ads = await (await request.get('/ads.txt')).text();
