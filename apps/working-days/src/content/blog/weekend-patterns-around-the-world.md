@@ -2,6 +2,7 @@
 title: "Weekend Days by Country: Patterns Around the World"
 description: "Saturday–Sunday, Friday–Saturday and Sunday-only weekends explained, including the UAE's 2022 change, and how they affect international deadlines."
 pubDate: 2026-10-18
+updatedDate: 2026-10-19
 draft: true
 ---
 
@@ -25,21 +26,21 @@ Several countries in the Middle East use a Friday–Saturday weekend, with the w
 - **Bahrain**
 - **Oman**
 
-Saudi Arabia and Oman both moved to Friday–Saturday in 2013, having previously used a Thursday–Friday weekend.
+Saudi Arabia and Oman both moved to Friday–Saturday in 2013, having previously used a Thursday–Friday weekend. Bahrain and Qatar had made the same switch earlier in the 2000s, and Kuwait's government did so in 2007. These are the official or government weekends; private employers in some of these countries set their own rest days.
 
-**Israel** also has a Friday–Saturday weekend, centred on the Sabbath, which runs from Friday evening to Saturday evening. Many businesses work a shorter day on Friday, so Friday is not always a full day off.
+In **Israel**, the usual working week runs from Sunday to Thursday, and the weekend is centred on the Sabbath, which runs from Friday evening to Saturday evening. Many businesses work a shorter day on Friday rather than closing, so Friday is not always a full day off.
 
 Working patterns can change, and individual employers may differ, so check current official sources if a date really matters.
 
 ## The UAE's switch to Saturday–Sunday
 
-The United Arab Emirates used a Friday–Saturday weekend until the end of 2021. In December 2021 the government announced that, from **1 January 2022**, the federal government would move to a Saturday–Sunday weekend, with a shorter working day on Friday.
+The United Arab Emirates used a Friday–Saturday weekend until the end of 2021. In December 2021 the government announced that, from **1 January 2022**, the federal government would move to a four-and-a-half-day week with a Saturday–Sunday weekend, working a half day on Friday.
 
 A few points are worth knowing:
 
-- The change applied to federal government entities, and the individual emirates' governments announced their own arrangements. Most aligned with the federal model.
-- **Sharjah** chose a different approach for its government: a four-day working week with a Friday–Sunday weekend.
-- Private companies set their own working weeks within the UAE's labour rules. Many moved to Saturday–Sunday, but not all did.
+- The change applied to federal government entities, and the individual emirates' governments announced their own arrangements. Abu Dhabi, Dubai, Ajman, Umm Al Quwain, Ras Al Khaimah and Fujairah adopted a similar week.
+- **Sharjah** chose a different approach for its government: a four-day working week, Monday to Thursday, with a Friday–Sunday weekend.
+- Private companies set their own working weeks within the UAE's labour law, so a private firm's weekend may differ from the government's.
 
 So when you work with a UAE organisation, it is reasonable to expect a Saturday–Sunday weekend, but it is still worth asking, especially for Sharjah government bodies or private firms.
 
@@ -84,4 +85,4 @@ These examples assume no public holidays. A holiday in either country would move
 - **Share holiday calendars** with partners at the start of a project.
 - **Check official sources** for each country's public holidays, and confirm working patterns with the organisation itself.
 
-If you need to test a few scenarios, the [working days calculator](/) lets you choose weekend patterns such as Saturday–Sunday, Friday–Saturday or Sunday only, and apply public holidays for many countries.
+If you need to test a few scenarios, the [working days calculator](/) lets you choose weekend patterns such as Saturday–Sunday, Friday–Saturday or Sunday only (or tick any combination of days), and apply public holidays for 41 countries. The weekend is set separately from the country and starts as Saturday–Sunday everywhere, so change it when you need a Friday–Saturday week. Its country list includes Bahrain and the United Arab Emirates but not Saudi Arabia, Qatar, Kuwait or Oman; for those, choose "No public holidays" and add the official holidays as custom days off.

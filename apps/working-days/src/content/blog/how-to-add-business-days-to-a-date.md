@@ -2,6 +2,7 @@
 title: "How to Add Business Days to a Date"
 description: "Add business days to a date step by step, with a worked example that includes holidays, plus how this applies to invoice terms and shipping estimates."
 pubDate: 2026-10-18
+updatedDate: 2026-10-19
 draft: true
 ---
 
@@ -73,7 +74,7 @@ For example, an order placed on Friday 6 November 2026 before the cut-off, with 
 - Dispatch within 2 business days: Monday 9 (1), Tuesday 10 (2). Dispatched by **Tuesday 10 November**.
 - Delivery in 3–5 business days after dispatch: between **Friday 13 and Tuesday 17 November**.
 
-That assumes a Monday-to-Friday carrier and no holidays. Public holidays can affect carriers differently from offices. In the United States, for example, Veterans Day (Wednesday 11 November 2026) is a federal holiday, and some carriers' services are affected, so a US order could arrive a day later. Each carrier publishes its own holiday schedule.
+That assumes a Monday-to-Friday carrier and no holidays. Public holidays can affect carriers differently from offices. In the United States, for example, Veterans Day (Wednesday 11 November 2026) is a federal holiday. In recent years the US Postal Service has closed post offices and paused regular mail delivery on Veterans Day (Priority Mail Express still runs), while UPS lists normal pickup and delivery for Veterans Day 2026, apart from services handed to the Postal Service. So a US order could arrive a day later depending on the carrier. Each carrier publishes its own holiday schedule.
 
 ## Using a spreadsheet
 
@@ -84,8 +85,8 @@ Excel and Google Sheets have a function for this:
 =WORKDAY.INTL(start_date, days, [weekend], [holidays])
 ```
 
-WORKDAY does not count the start date, and it skips Saturdays, Sundays and any dates in the holidays range. WORKDAY.INTL lets you set a different weekend, for example `7` or `"0000110"` for Friday–Saturday. A negative number of days counts backwards, which is handy for working out the latest date to start something.
+WORKDAY does not count the start date, and it skips Saturdays, Sundays and any dates in the holidays range. With the England holidays above in D1:D3, `=WORKDAY(A1, 10, D1:D3)` with 18/12/2026 in A1 returns 06/01/2027 (format the cell as a date). WORKDAY.INTL lets you set a different weekend, for example `7` or `"0000110"` for Friday–Saturday. A negative number of days counts backwards, which is handy for working out the latest date to start something.
 
 ## A quicker way
 
-The [working days calculator](/) can add or subtract business days using public holidays for many countries, a choice of weekend patterns and your own days off. For contractual dates, double-check the result against the official holiday list and your agreement.
+The [working days calculator](/) can add or subtract business days using public holidays for 41 countries, a choice of weekend patterns and your own days off. Like WORKDAY, it never counts the start date, so 1 working day after a Friday is the following Monday. It also shows the matching number of working hours. For contractual dates, double-check the result against the official holiday list and your agreement.
