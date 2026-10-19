@@ -192,11 +192,5 @@ Please run these on real devices and browsers before launch. Tick them off as yo
 
 ### Blog drafts (all `draft: true`)
 - [ ] Read all 10 posts and set `draft: false` only on those you approve.
-- [ ] Device posts: check the Windows 11, macOS, Chrome, Firefox and Safari settings paths. The
-      writer verified the Edge path against Microsoft's documentation but wrote the others from
-      knowledge.
-- [ ] Working-days posts: check the Excel/Sheets `NETWORKDAYS`, `NETWORKDAYS.INTL`, `WORKDAY` and
-      `WORKDAY.INTL` syntax and weekend codes, the list of Friday–Saturday countries, the US
-      observed-holiday rule, UK substitute days, and the US Veterans Day shipping example. The UAE
-      2022 weekend change and Australia's 2026 Anzac Day arrangements were checked against official
-      sources by the writer.
+- [ ] The posts were fact-checked in `blog-review-1`; see [BLOG_REVIEW.md](BLOG_REVIEW.md) for what
+      was checked, the sources, and the items still open (its "Still open" section).
