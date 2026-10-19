@@ -1,7 +1,7 @@
 // Accessible tabs (WAI-ARIA tabs pattern) synced with the URL hash: #mic, #webcam,
-// #keyboard, #screen. Panels have ids like "panel-mic", so the hash never scrolls the page.
+// #keyboard, #screen, #speaker. Panels have ids like "panel-mic", so the hash never scrolls the page.
 
-const IDS = ['mic', 'webcam', 'keyboard', 'screen'] as const;
+const IDS = ['mic', 'webcam', 'keyboard', 'screen', 'speaker'] as const;
 type TabId = (typeof IDS)[number];
 
 function fromHash(hash: string): TabId | null {

@@ -7,11 +7,26 @@ const tabs = [
   { id: 'webcam', label: 'Webcam test' },
   { id: 'keyboard', label: 'Keyboard test' },
   { id: 'screen', label: 'Dead pixel test' },
+  { id: 'speaker', label: 'Speaker test' },
+];
+
+// Preview swatches for the dead pixel test patterns (the test itself lives in scripts/screen.ts).
+const patterns = [
+  ...['#000', '#fff', '#f00', '#0f0', '#00f', '#0ff', '#f0f', '#ff0', '#808080'].map((c) => ({ preview: c })),
+  { preview: 'linear-gradient(to right, #000, #fff)' },
+  { preview: 'repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0 / 8px 8px' },
+  { preview: '#000' },
+];
+
+const fixerSizes = [
+  { value: 64, label: 'Small (64 px)' },
+  { value: 128, label: 'Medium (128 px)' },
+  { value: 256, label: 'Large (256 px)' },
 ];
 ---
 
 <div id="device-tests" class="card p-0 sm:p-0">
-  <div role="tablist" aria-label="Device tests" class="grid grid-cols-2 gap-1 border-b border-line p-2 sm:grid-cols-4">
+  <div role="tablist" aria-label="Device tests" class="grid grid-cols-3 gap-1 border-b border-line p-2 sm:grid-cols-5">
     {
       tabs.map((t, i) => (
         <button
@@ -70,26 +85,53 @@ const tabs = [
         <p id="mic-status" class="mt-2 min-h-6 text-sm" role="status">Not started.</p>
       </div>
 
+      <fieldset class="mt-4">
+        <legend class="text-sm font-semibold">Audio processing</legend>
+        <div class="mt-1 flex flex-wrap gap-x-6 gap-y-1">
+          <label class="flex min-h-11 items-center gap-2 text-sm">
+            <input id="mic-ns" type="checkbox" class="size-5 accent-accent" checked /> Noise suppression
+          </label>
+          <label class="flex min-h-11 items-center gap-2 text-sm">
+            <input id="mic-ec" type="checkbox" class="size-5 accent-accent" checked /> Echo cancellation
+          </label>
+        </div>
+        <p class="text-sm text-muted">
+          Changing these restarts the microphone. Record a clip with each setting and play it back to hear the
+          difference. Some browsers ignore these requests: the details below show what the browser actually uses.
+        </p>
+      </fieldset>
+
       <div id="mic-record-wrap" class="mt-4 rounded-lg border border-line bg-bg p-4">
         <h3 class="font-semibold">Record and play back (optional)</h3>
         <p class="mt-1 text-sm text-muted">
           Records 5 seconds so you can hear how you sound. The recording stays in this tab’s memory and is discarded when
-          you leave.
+          you leave, unless you download it to your device.
         </p>
         <div class="mt-3 flex flex-wrap items-center gap-3">
           <button id="mic-record" type="button" class="btn" disabled>Record 5 seconds</button>
+          <a id="mic-download" class="btn" href="#" download="mic-recording.webm" hidden>Download recording</a>
           <span id="mic-record-status" class="text-sm" role="status"></span>
         </div>
         <audio id="mic-playback" class="mt-3 w-full" controls hidden></audio>
       </div>
 
       <div class="mt-4"><ProblemBox kind="microphone" id="mic-problem" /></div>
-      <dl id="mic-info" class="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4" hidden>
-        <div class="info"><dt>Sample rate</dt><dd data-info="sampleRate">–</dd></div>
-        <div class="info"><dt>Channels</dt><dd data-info="channelCount">–</dd></div>
-        <div class="info"><dt>Echo cancellation</dt><dd data-info="echoCancellation">–</dd></div>
-        <div class="info"><dt>Noise suppression</dt><dd data-info="noiseSuppression">–</dd></div>
-      </dl>
+
+      <section class="mt-4" aria-labelledby="mic-info-heading">
+        <h3 id="mic-info-heading" class="font-semibold">Microphone details</h3>
+        <p class="mt-1 text-sm text-muted">
+          What your browser reports about the microphone while the test is running. Browsers don’t share every value.
+        </p>
+        <dl id="mic-info" class="mt-2 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+          <div class="info col-span-2"><dt>Device name</dt><dd data-info="label">–</dd></div>
+          <div class="info"><dt>Sample rate</dt><dd data-info="sampleRate">–</dd></div>
+          <div class="info"><dt>Channels</dt><dd data-info="channelCount">–</dd></div>
+          <div class="info"><dt>Echo cancellation</dt><dd data-info="echoCancellation">–</dd></div>
+          <div class="info"><dt>Noise suppression</dt><dd data-info="noiseSuppression">–</dd></div>
+          <div class="info"><dt>Auto gain control</dt><dd data-info="autoGainControl">–</dd></div>
+          <div class="info"><dt>Latency</dt><dd data-info="latency">–</dd></div>
+        </dl>
+      </section>
     </section>
 
     <!-- ===== Webcam ===== -->
@@ -157,45 +199,85 @@ const tabs = [
         Press keys on your keyboard. Keys light up while held and stay marked once tested. Key presses are not recorded
         or sent anywhere.
       </p>
-      <div class="mt-4 flex flex-wrap items-center gap-3">
-        <fieldset class="flex items-center gap-1 rounded-lg border border-line bg-bg p-1">
-          <legend class="sr-only">Keyboard layout</legend>
-          <label class="layout-option"><input type="radio" name="kb-layout" value="ansi" class="sr-only" checked />ANSI (US)</label>
-          <label class="layout-option"><input type="radio" name="kb-layout" value="iso" class="sr-only" />ISO (UK/EU)</label>
-        </fieldset>
-        <button id="kb-reset" type="button" class="btn">Reset</button>
-        <span class="text-sm text-muted">Tested: <strong id="kb-count">0</strong> keys</span>
+
+      <div id="kb-touch" class="mt-4 rounded-lg border border-line bg-bg p-4" hidden>
+        <h3 class="font-semibold">This test is for physical keyboards</h3>
+        <p class="mt-1 text-sm">
+          This device looks like a phone or tablet without a keyboard. The keyboard test checks physical keyboards, such
+          as a USB or Bluetooth keyboard or a tablet keyboard case. The on-screen keyboard on a phone or tablet can’t be
+          tested this way.
+        </p>
+        <p class="mt-1 text-sm">If you connect a keyboard, press any key on it and the test starts.</p>
+        <button id="kb-show" type="button" class="btn btn-primary mt-3">I have a keyboard connected</button>
       </div>
-      <dl class="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4" aria-live="polite" aria-atomic="true">
-        <div class="info"><dt>key</dt><dd id="kb-key" class="font-mono">–</dd></div>
-        <div class="info"><dt>code</dt><dd id="kb-code" class="font-mono">–</dd></div>
-        <div class="info"><dt>keyCode (legacy)</dt><dd id="kb-keycode" class="font-mono">–</dd></div>
-        <div class="info"><dt>location</dt><dd id="kb-location" class="font-mono">–</dd></div>
-      </dl>
-      <Keyboard />
-      <p class="mt-3 text-sm text-muted">
-        Some keys can’t be detected by any website: <kbd>Fn</kbd> is handled by the keyboard itself, and the system may
-        keep shortcuts such as <kbd>Print Screen</kbd> or <kbd>Win</kbd>/<kbd>⌘</kbd> combinations. <kbd>Tab</kbd> is
-        recorded but still moves focus, so you can always leave the test with the keyboard.
-      </p>
+
+      <div id="kb-test">
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <fieldset class="flex items-center gap-1 rounded-lg border border-line bg-bg p-1">
+            <legend class="sr-only">Keyboard layout</legend>
+            <label class="layout-option"><input type="radio" name="kb-layout" value="ansi" class="sr-only" checked />ANSI (US)</label>
+            <label class="layout-option"><input type="radio" name="kb-layout" value="iso" class="sr-only" />ISO (UK/EU)</label>
+          </fieldset>
+          <button id="kb-reset" type="button" class="btn">Reset</button>
+          <span class="text-sm text-muted">Tested: <strong id="kb-count">0</strong> keys</span>
+        </div>
+        <dl class="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4" aria-live="polite" aria-atomic="true">
+          <div class="info"><dt>key</dt><dd id="kb-key" class="font-mono">–</dd></div>
+          <div class="info"><dt>code</dt><dd id="kb-code" class="font-mono">–</dd></div>
+          <div class="info"><dt>keyCode (legacy)</dt><dd id="kb-keycode" class="font-mono">–</dd></div>
+          <div class="info"><dt>location</dt><dd id="kb-location" class="font-mono">–</dd></div>
+        </dl>
+        <dl class="mt-2 grid grid-cols-3 gap-2 text-sm">
+          <div class="info"><dt>Keys held now</dt><dd id="kb-held">0</dd></div>
+          <div class="info"><dt>Most keys at once</dt><dd id="kb-max">0</dd></div>
+          <div class="info"><dt>Chatter warnings</dt><dd id="kb-chatter-count">0</dd></div>
+        </dl>
+        <p id="kb-chatter" class="mt-2 min-h-6 text-sm" role="status"></p>
+        <Keyboard />
+        <p class="mt-3 text-sm text-muted">
+          Some keys can’t be detected by any website: <kbd>Fn</kbd> is handled by the keyboard itself, and the system may
+          keep shortcuts such as <kbd>Print Screen</kbd> or <kbd>Win</kbd>/<kbd>⌘</kbd> combinations. <kbd>Tab</kbd> is
+          recorded but still moves focus, so you can always leave the test with the keyboard.
+        </p>
+        <div class="prose mt-4">
+          <h3>Rollover and ghosting</h3>
+          <p>
+            Hold down several keys together, such as the keys you use in games. “Most keys at once” is the largest number
+            of keys the browser received as held at the same time. If a key you are holding doesn’t light up, the
+            keyboard can’t register that combination. This is called ghosting or limited rollover. Your system can also
+            limit how many keys it passes on, so treat the number as a guide.
+          </p>
+          <h3>Chatter (double typing)</h3>
+          <p>
+            A worn or dirty key switch can register one press as two. If a key is released and registers again within
+            30 ms, which is quicker than people normally press a key twice, it is flagged above as chatter. Holding a
+            key down to repeat it is not counted. Type normally for a minute: one flag now and then is worth keeping an
+            eye on, while repeated flags on the same key suggest the switch needs cleaning or replacing.
+          </p>
+          <p>This test can’t measure your keyboard’s polling rate or exact response time.</p>
+        </div>
+      </div>
     </section>
 
     <!-- ===== Screen ===== -->
     <section id="panel-screen" role="tabpanel" aria-labelledby="tab-screen" tabindex="0" data-panel="screen" hidden>
       <h2 class="text-xl font-bold">Dead pixel test</h2>
       <p class="mt-1 text-sm text-muted">
-        Fill your screen with solid colours to spot dead, stuck or hot pixels. Clean your screen first so dust isn’t
-        mistaken for a faulty pixel.
+        Fill your screen with solid colours and test patterns to spot dead, stuck or hot pixels, colour banding and
+        backlight bleed. Clean your screen first so dust isn’t mistaken for a faulty pixel.
+      </p>
+      <p id="screen-ios-tip" class="mt-3 rounded-lg border border-line bg-bg p-3 text-sm" hidden>
+        <strong>Tip for iPhone:</strong> web pages can’t hide Safari’s toolbars completely. For a near full-screen view,
+        turn your phone to landscape, or tap Share › <strong>Add to Home Screen</strong>, open the site from the new icon
+        and choose Dead pixel test.
       </p>
       <div class="mt-4 flex flex-wrap items-center gap-3">
         <button id="screen-start" type="button" class="btn btn-primary">Start dead pixel test</button>
-        <span class="text-sm text-muted">Click, tap or press <kbd>→</kbd> for the next colour · <kbd>←</kbd> back · <kbd>Esc</kbd> to exit</span>
+        <span class="text-sm text-muted">Click, tap or press <kbd>→</kbd> for the next pattern · <kbd>←</kbd> back · <kbd>Esc</kbd> to exit</span>
       </div>
-      <div class="mt-4 grid grid-cols-9 gap-1" aria-hidden="true">
-        <span class="h-6 rounded bg-black ring-1 ring-line"></span><span class="h-6 rounded bg-white ring-1 ring-line"></span><span
-          class="h-6 rounded bg-[#f00]"></span><span class="h-6 rounded bg-[#0f0]"></span><span class="h-6 rounded bg-[#00f]"
-        ></span><span class="h-6 rounded bg-[#0ff]"></span><span class="h-6 rounded bg-[#f0f]"></span><span
-          class="h-6 rounded bg-[#ff0]"></span><span class="h-6 rounded bg-[#808080]"></span>
+      <p id="screen-fs-note" class="mt-2 min-h-6 text-sm"></p>
+      <div class="mt-2 grid grid-cols-12 gap-1" aria-hidden="true">
+        {patterns.map((p) => <span class="h-6 rounded ring-1 ring-line" style={`background: ${p.preview}`}></span>)}
       </div>
       <div class="prose mt-4">
         <h3>What to look for</h3>
@@ -203,6 +285,9 @@ const tabs = [
           <li><strong>Dead pixel:</strong> stays black on every colour, easiest to see on white.</li>
           <li><strong>Stuck pixel:</strong> stays one colour (often red, green or blue), easiest to see on black or a contrasting colour.</li>
           <li><strong>Hot pixel:</strong> stays bright white, easiest to see on black.</li>
+          <li><strong>Banding:</strong> on the grey gradient, visible steps or stripes instead of a smooth blend.</li>
+          <li><strong>Checkerboard:</strong> squares that look blurred, smeared or uneven, or areas that flicker.</li>
+          <li><strong>Backlight bleed:</strong> on the last black screen, in a dim room, patches of light glowing in from the edges or corners.</li>
         </ul>
         <p>
           Look at the screen straight on from a normal viewing distance, and check the corners and edges. If you are
@@ -210,6 +295,69 @@ const tabs = [
         </p>
       </div>
       <p id="screen-status" class="sr-only" role="status"></p>
+
+      <section class="mt-6 rounded-lg border border-line bg-bg p-4" aria-labelledby="fixer-heading">
+        <h3 id="fixer-heading" class="font-semibold">Stuck pixel fixer</h3>
+        <div class="mt-1 space-y-2 text-sm">
+          <p>
+            A <strong>dead pixel</strong> gets no power and stays black. Software can’t revive it, and this fixer won’t
+            help. A <strong>stuck pixel</strong> is lit but stuck on one colour. Flashing colours quickly over it
+            sometimes gets it changing again. It doesn’t always work, and a fixed pixel can get stuck again.
+          </p>
+          <p>
+            Drag the flashing box over the stuck pixel and leave it running for a few minutes, then stop and check.
+            <strong>The box flashes rapidly</strong>: read the warning before you start.
+          </p>
+        </div>
+        <div class="mt-3 flex flex-wrap items-end gap-3">
+          <div class="w-44">
+            <label for="fixer-size" class="field-label">Box size</label>
+            <select id="fixer-size" class="field">
+              {fixerSizes.map((f, i) => <option value={f.value} selected={i === 1}>{f.label}</option>)}
+            </select>
+          </div>
+          <button id="fixer-open" type="button" class="btn">Start stuck pixel fixer…</button>
+        </div>
+        <p id="fixer-status" class="mt-2 min-h-6 text-sm" role="status"></p>
+      </section>
+    </section>
+
+    <!-- ===== Speaker ===== -->
+    <section id="panel-speaker" role="tabpanel" aria-labelledby="tab-speaker" tabindex="0" data-panel="speaker" hidden>
+      <h2 class="text-xl font-bold">Speaker test</h2>
+      <p class="mt-1 text-sm text-muted">
+        Play a short test sound on the left speaker, the right speaker or both, to check your speakers or headphones work
+        and that left and right are the right way round. The sound is generated in your browser: nothing is downloaded or
+        uploaded.
+      </p>
+      <p class="mt-3 rounded-lg border border-line bg-bg p-3 text-sm">
+        <strong>Volume:</strong> turn your volume down before the first play, then raise it to a comfortable level. Take
+        extra care with headphones and earbuds.
+      </p>
+      <div class="mt-4 grid max-w-md grid-cols-3 gap-2" role="group" aria-label="Play test sound">
+        <button type="button" class="btn" data-channel="left">Play left</button>
+        <button type="button" class="btn" data-channel="right">Play right</button>
+        <button type="button" class="btn" data-channel="both">Play both</button>
+      </div>
+      <p id="speaker-status" class="mt-2 min-h-6 text-sm" role="status">Not played yet.</p>
+      <div class="prose mt-4">
+        <h3>What to check</h3>
+        <ul>
+          <li>
+            “Play left” should come only from the left speaker or ear cup, and “Play right” only from the right. If they
+            are swapped, check your headphones are the right way round and the speaker cables are in the right sockets.
+          </li>
+          <li>
+            If left and right both come from both sides, mono audio may be switched on (Windows: Settings › Accessibility
+            › Audio; macOS: System Settings › Accessibility › Audio; iPhone: Settings › Accessibility › Audio &amp;
+            Visual), or your device may have only one speaker.
+          </li>
+          <li>
+            If you hear nothing, check the volume and mute settings, and that the right output device is selected in
+            your system sound settings. Bluetooth headphones must be connected before you press play.
+          </li>
+        </ul>
+      </div>
     </section>
   </div>
 </div>
@@ -223,10 +371,54 @@ const tabs = [
   tabindex="-1"
   hidden
 >
-  <p id="screen-hint" class="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/75 px-4 py-2 text-center text-sm text-white">
-    Click or press → for the next colour · ← back · Esc to exit
+  <p id="screen-hint" class="pointer-events-none absolute top-4 left-1/2 w-max max-w-[90vw] -translate-x-1/2 rounded-lg bg-black/75 px-4 py-2 text-center text-sm text-white">
+    Click or press → for the next pattern · ← back · Esc to exit
   </p>
   <p id="screen-colour" class="sr-only" aria-live="assertive"></p>
+</div>
+
+<dialog id="fixer-warning" class="fixer-dialog" aria-labelledby="fixer-warning-title" aria-describedby="fixer-warning-text">
+  <h2 id="fixer-warning-title" class="text-xl font-bold text-danger">Photosensitivity warning</h2>
+  <div id="fixer-warning-text" class="mt-2 space-y-2 text-sm">
+    <p>
+      The stuck pixel fixer flashes bright colours very quickly. Don’t use it if you, or anyone who can see your screen,
+      has photosensitive epilepsy or is sensitive to flashing lights. Stop straight away if you feel dizzy or unwell.
+    </p>
+    <p>To stop it, press <kbd>Esc</kbd> or click or tap once anywhere.</p>
+  </div>
+  <p id="fixer-rm-note" class="mt-2 text-sm" hidden>
+    <strong>Your device is set to reduce motion.</strong> The fixer only works by flashing, so it can’t follow that
+    setting. Only continue if you are sure.
+  </p>
+  <div class="mt-3 space-y-1">
+    <label class="flex min-h-11 items-start gap-2 text-sm">
+      <input id="fixer-ok" type="checkbox" class="mt-0.5 size-5 shrink-0 accent-accent" />
+      I have read the warning and want to start the flashing box
+    </label>
+    <label id="fixer-rm-label" class="flex min-h-11 items-start gap-2 text-sm" hidden>
+      <input id="fixer-ok-rm" type="checkbox" class="mt-0.5 size-5 shrink-0 accent-accent" />
+      I want to start it even though reduce motion is on
+    </label>
+  </div>
+  <div class="mt-4 flex flex-wrap gap-2">
+    <button id="fixer-go" type="button" class="btn btn-primary" disabled>Start flashing box</button>
+    <button id="fixer-cancel" type="button" class="btn">Cancel</button>
+  </div>
+</dialog>
+
+<div
+  id="fixer-layer"
+  class="fixed inset-0 z-[110] touch-none select-none"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Stuck pixel fixer running"
+  tabindex="-1"
+  hidden
+>
+  <p class="pointer-events-none absolute bottom-4 left-1/2 w-max max-w-[90vw] -translate-x-1/2 rounded-lg bg-black/80 px-4 py-2 text-center text-sm text-white">
+    Drag the box over the stuck pixel (or use the arrow keys). Click or tap once, or press Esc, to stop.
+  </p>
+  <div id="fixer-box" class="absolute cursor-move" aria-hidden="true"></div>
 </div>
 
 <style>
@@ -295,6 +487,22 @@ const tabs = [
     font-family: var(--font-mono);
     font-size: 0.85em;
   }
+  #screen-overlay,
+  #screen-overlay * {
+    cursor: none;
+  }
+  .fixer-dialog {
+    margin: auto;
+    max-width: min(32rem, calc(100vw - 2rem));
+    border: 1px solid var(--c-border);
+    border-radius: 0.75rem;
+    background: var(--c-bg);
+    color: var(--c-fg);
+    padding: 1.25rem;
+  }
+  .fixer-dialog::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
   #cam-video.mirrored {
     transform: scaleX(-1);
   }
@@ -306,15 +514,20 @@ const tabs = [
   import { initWebcam } from '../scripts/webcam';
   import { initKeyboard } from '../scripts/keyboard';
   import { initScreen } from '../scripts/screen';
+  import { initSpeaker } from '../scripts/speaker';
+  import { initFixer } from '../scripts/fixer';
 
   const tabs = initTabs();
   const mic = initMic();
   const cam = initWebcam();
   initKeyboard(() => tabs.current() === 'keyboard');
   initScreen();
+  const speaker = initSpeaker();
+  initFixer();
   // Release the microphone/camera when their tab is left, so the browser's "in use" light goes off.
   tabs.onChange((id) => {
     if (id !== 'mic') mic.stop();
     if (id !== 'webcam') cam.stop();
+    if (id !== 'speaker') speaker.stop();
   });
 </script>
