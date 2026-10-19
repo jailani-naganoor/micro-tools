@@ -1,0 +1,92 @@
+---
+// "Working days in [year]" table. Rendered with placeholders so the layout doesn't move
+// when the calculator script fills it in (see renderYear in scripts/calculator.ts).
+const months = Array.from({ length: 12 }, (_, i) =>
+  new Intl.DateTimeFormat('en-GB', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2000, i, 1))),
+);
+const year = new Date().getUTCFullYear();
+---
+
+<section id="year" class="card mt-6" aria-labelledby="year-heading">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 id="year-heading" class="text-xl font-bold">Working days in <span id="year-label">{year}</span></h2>
+      <p id="year-settings" class="mt-1 min-h-10 text-sm text-muted">
+        Uses the public holidays, weekend and days off chosen above.
+      </p>
+    </div>
+    <div>
+      <label for="year-select" class="field-label">Year</label>
+      <select id="year-select" class="field w-28">
+        {[-2, -1, 0, 1, 2].map((d) => <option value={year + d} selected={d === 0}>{year + d}</option>)}
+      </select>
+    </div>
+  </div>
+  <div class="mt-4 overflow-x-auto" tabindex="0" role="region" aria-labelledby="year-heading">
+    <table class="year-table w-full text-sm">
+      <caption class="sr-only">Working days per month for the selected year</caption>
+      <thead>
+        <tr>
+          <th scope="col">Month</th>
+          <th scope="col">Calendar days</th>
+          <th scope="col">Weekend days</th>
+          <th scope="col">Holidays &amp; days off</th>
+          <th scope="col">Working days</th>
+          <th scope="col">Working hours</th>
+        </tr>
+      </thead>
+      <tbody id="year-body">
+        {
+          months.map((m) => (
+            <tr>
+              <th scope="row">{m}</th>
+              <td>–</td>
+              <td>–</td>
+              <td>–</td>
+              <td class="font-semibold">–</td>
+              <td>–</td>
+            </tr>
+          ))
+        }
+      </tbody>
+      <tfoot>
+        <tr id="year-total">
+          <th scope="row">Total</th>
+          <td>–</td>
+          <td>–</td>
+          <td>–</td>
+          <td>–</td>
+          <td>–</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>
+
+<style>
+  .year-table th,
+  .year-table td {
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--c-border);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .year-table th:first-child {
+    text-align: left;
+  }
+  .year-table thead th {
+    color: var(--c-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: bottom;
+    white-space: normal;
+  }
+  .year-table tbody th {
+    font-weight: 400;
+  }
+  .year-table tfoot th,
+  .year-table tfoot td {
+    border-bottom: 0;
+    font-weight: 700;
+  }
+</style>

@@ -2,9 +2,12 @@ import { addMonths, formatLongDate, MAX_YEAR, MIN_YEAR, parseISODate, todayISO, 
 import { COUNTRIES, COUNTRY_CODES, countryFromLocale, loadCountry, type Holiday } from '../lib/holidays';
 import {
   addWorkingDays,
+  countingNote,
   countWorkingDays,
   estimateCalendarSpan,
   MAX_ADD_DAYS,
+  monthlyBreakdown,
+  workingHours,
   WEEKEND_PATTERNS,
   type AddResult,
   type CountResult,
@@ -19,7 +22,10 @@ interface State {
   mode: Mode;
   start: string;
   end: string;
+  includeStart: boolean;
   includeEnd: boolean;
+  /** Hours in a working day, for the working hours figure. */
+  hours: number;
   days: number;
   op: 'add' | 'subtract';
   country: string; // ISO code or "none"
@@ -38,6 +44,17 @@ const WEEKEND_LABELS: Record<WeekendPattern, string> = {
   custom: 'custom weekend',
 };
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const DEFAULT_HOURS = 8;
+const MAX_HOURS = 24;
+
+/** Valid hours per day: more than 0 and at most 24. */
+export function parseHours(value: string | null): number | null {
+  if (value === null || value.trim() === '') return null;
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 && n <= MAX_HOURS ? n : null;
+}
+
+const fmtNumber = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -91,7 +108,9 @@ export function stateFromUrl(search: string, today: string, languages: readonly 
     mode: q.get('mode') === 'add' ? 'add' : 'between',
     start,
     end,
+    includeStart: q.get('incs') !== '0',
     includeEnd: q.get('inc') === '1',
+    hours: parseHours(q.get('hours')) ?? DEFAULT_HOURS,
     days,
     op: q.get('op') === 'subtract' ? 'subtract' : 'add',
     country,
@@ -109,6 +128,7 @@ export function stateToQuery(s: State): string {
   q.set('start', s.start);
   if (s.mode === 'between') {
     q.set('end', s.end);
+    if (!s.includeStart) q.set('incs', '0');
     if (s.includeEnd) q.set('inc', '1');
   } else {
     q.set('days', String(s.days));
@@ -120,6 +140,7 @@ export function stateToQuery(s: State): string {
   if (s.weekend === 'custom') q.set('weekdays', [...s.weekendDays].sort().join(','));
   if (s.skip.size) q.set('skip', [...s.skip].sort().join(','));
   if (s.off.size) q.set('off', [...s.off].sort().join(','));
+  if (s.hours !== DEFAULT_HOURS) q.set('hours', String(s.hours));
   return q.toString().replace(/%2C/g, ',');
 }
 
@@ -133,7 +154,16 @@ export function initCalculator() {
   const els = {
     start: $<HTMLInputElement>('start'),
     end: $<HTMLInputElement>('end'),
+    incs: $<HTMLInputElement>('incs'),
     inc: $<HTMLInputElement>('inc'),
+    hours: $<HTMLInputElement>('hours'),
+    hoursPerDay: $<HTMLSpanElement>('hours-per-day'),
+    note: $<HTMLParagraphElement>('result-note'),
+    year: $<HTMLSelectElement>('year-select'),
+    yearLabel: $<HTMLSpanElement>('year-label'),
+    yearSettings: $<HTMLParagraphElement>('year-settings'),
+    yearBody: $<HTMLTableSectionElement>('year-body'),
+    yearTotal: $<HTMLTableRowElement>('year-total'),
     days: $<HTMLInputElement>('days'),
     op: $<HTMLSelectElement>('op'),
     country: $<HTMLSelectElement>('country'),
@@ -157,6 +187,7 @@ export function initCalculator() {
   const state = stateFromUrl(location.search, todayISO(), navigator.languages ?? [navigator.language]);
   let summary = '';
   let runId = 0;
+  let yearRunId = 0;
   let userChanged = hadQuery;
 
   // ---- state → form ----
@@ -165,7 +196,9 @@ export function initCalculator() {
     for (const el of form.querySelectorAll<HTMLElement>('[data-mode]')) el.hidden = el.dataset.mode !== state.mode;
     els.start.value = state.start;
     els.end.value = state.end;
+    els.incs.checked = state.includeStart;
     els.inc.checked = state.includeEnd;
+    els.hours.value = String(state.hours);
     els.days.value = String(state.days);
     els.op.value = state.op;
     els.country.value = state.country;
@@ -210,7 +243,10 @@ export function initCalculator() {
     state.mode = ([...modeInputs].find((r) => r.checked)?.value as Mode) ?? 'between';
     if (parseISODate(els.start.value) !== null) state.start = els.start.value;
     if (parseISODate(els.end.value) !== null) state.end = els.end.value;
+    state.includeStart = els.incs.checked;
     state.includeEnd = els.inc.checked;
+    const hours = parseHours(els.hours.value);
+    if (hours !== null) state.hours = hours;
     state.op = els.op.value === 'subtract' ? 'subtract' : 'add';
     state.region = els.region.value;
   }
@@ -241,6 +277,7 @@ export function initCalculator() {
       state.days = daysValue;
     }
     if (state.weekendDays.length >= 7) return showError('Leave at least one day of the week as a working day.');
+    if (parseHours(els.hours.value) === null) return showError('Enter the hours in a working day, from 0.25 to 24 (for example 7.5).');
 
     // Which years of holidays we need.
     const startDay = parseISODate(state.start)!;
@@ -277,7 +314,7 @@ export function initCalculator() {
 
     try {
       if (state.mode === 'between') {
-        renderCount(countWorkingDays(state.start, state.end, state.includeEnd, rules), all);
+        renderCount(countWorkingDays(state.start, state.end, state.includeEnd, rules, state.includeStart), all);
       } else {
         const signed = state.op === 'subtract' ? -state.days : state.days;
         const r = addWorkingDays(state.start, signed, rules);
@@ -289,22 +326,79 @@ export function initCalculator() {
       showError(e instanceof Error ? e.message : 'Something went wrong with this calculation.');
     }
     if (userChanged) history.replaceState(null, '', `?${stateToQuery(state)}`);
+    void renderYear();
   }
 
   function showError(message: string) {
     setStatus('–', message, false);
+    els.note.textContent = '';
     setStats('–', '–', '–', '–');
     els.holList.replaceChildren();
   }
 
   function setStats(total: string | number, weekend: string | number, holidays: string | number, working: string | number) {
     const set = (k: string, v: string | number) => {
-      form.querySelector(`[data-stat="${k}"]`)!.textContent = typeof v === 'number' ? v.toLocaleString() : v;
+      form.querySelector(`[data-stat="${k}"]`)!.textContent = typeof v === 'number' ? fmtNumber(v) : v;
     };
     set('total', total);
     set('weekend', weekend);
     set('holidays', holidays);
     set('working', working);
+    set('hours', typeof working === 'number' ? workingHours(working, state.hours) : '–');
+    els.hoursPerDay.textContent = `(${fmtNumber(state.hours)} h/day)`;
+  }
+
+  // ---- "Working days in [year]" table ----
+  function yearOptions() {
+    const current = Number(todayISO().slice(0, 4));
+    const selected = Number(els.year.value) || current;
+    els.year.replaceChildren(...[-2, -1, 0, 1, 2].map((d) => new Option(String(current + d), String(current + d))));
+    els.year.value = String(selected >= current - 2 && selected <= current + 2 ? selected : current);
+  }
+
+  async function renderYear() {
+    const id = ++yearRunId;
+    const year = Number(els.year.value);
+    const cells = (row: Element) => row.querySelectorAll('td');
+    const clear = (text: string) => {
+      els.yearSettings.textContent = text;
+      for (const row of [...els.yearBody.rows, els.yearTotal]) for (const td of cells(row)) td.textContent = '–';
+    };
+    if (state.weekendDays.length >= 7) return clear('Leave at least one day of the week as a working day.');
+    const names = new Map<string, string[]>();
+    if (state.country !== 'none') {
+      try {
+        const country = await loadCountry(state.country);
+        if (id !== yearRunId) return;
+        for (const h of country.getHolidays(year, state.region || undefined)) {
+          names.set(h.date, [...(names.get(h.date) ?? []), h.name]);
+        }
+      } catch {
+        return clear('Holiday data could not be loaded. Check your connection and reload the page.');
+      }
+    }
+    const months = monthlyBreakdown(year, {
+      weekendDays: state.weekendDays,
+      holidays: (date) => (state.skip.has(date) ? undefined : names.get(date)),
+      daysOff: state.off,
+    });
+    const total = { totalDays: 0, weekendDays: 0, daysOff: 0, workingDays: 0 };
+    const fill = (row: Element, m: typeof total) => {
+      const values = [m.totalDays, m.weekendDays, m.daysOff, m.workingDays, workingHours(m.workingDays, state.hours)];
+      cells(row).forEach((td, i) => (td.textContent = fmtNumber(values[i])));
+    };
+    months.forEach((m, i) => {
+      fill(els.yearBody.rows[i], m);
+      total.totalDays += m.totalDays;
+      total.weekendDays += m.weekendDays;
+      total.daysOff += m.daysOff;
+      total.workingDays += m.workingDays;
+    });
+    fill(els.yearTotal, total);
+    els.yearLabel.textContent = String(year);
+    els.yearSettings.textContent =
+      `${settingsLine()}, ${fmtNumber(state.hours)} hours per day` +
+      (state.off.size || state.skip.size ? ', including your days off and unticked holidays.' : '.');
   }
 
   function holidaysBetween(all: Map<string, string[]>, from: string, to: string): Holiday[] {
@@ -384,15 +478,19 @@ export function initCalculator() {
     const n = r.workingDays;
     const main = `${n.toLocaleString()} working ${n === 1 ? 'day' : 'days'}`;
     const range = `${formatLongDate(r.start)} and ${formatLongDate(r.end)}`;
+    const dates = describeIncluded(r.includeStart, r.includeEnd);
     const sub =
-      `Between ${range}, ${r.includeEnd ? 'including' : 'not including'} the end date.` +
-      (r.reversed ? ' The end date was before the start date, so the dates were swapped.' : '');
+      `Between ${range}, ${dates}.` + (r.reversed ? ' The end date was before the start date, so the dates were swapped.' : '');
     setStatus(main, sub, true);
+    els.note.textContent = countingNote(r.includeStart, r.includeEnd);
     setStats(r.totalDays, r.weekendDays, deducted(r), r.workingDays);
-    const last = r.includeEnd ? r.end : formatDayBefore(r.end);
-    renderHolidayList(r.totalDays > 0 ? holidaysBetween(all, r.start, last) : []);
+    const first = r.includeStart ? r.start : shiftDay(r.start, 1);
+    const last = r.includeEnd ? r.end : shiftDay(r.end, -1);
+    renderHolidayList(r.totalDays > 0 ? holidaysBetween(all, first, last) : []);
+    const hours = workingHours(r.workingDays, state.hours);
     summary =
-      `${main} between ${range} (end date ${r.includeEnd ? 'included' : 'not included'}). ` +
+      `${main} between ${range} (${dates}). ` +
+      `${fmtNumber(hours)} working hours at ${fmtNumber(state.hours)} hours per day. ` +
       `${r.totalDays.toLocaleString()} calendar days, ${r.weekendDays.toLocaleString()} weekend days, ` +
       `${deducted(r)} holidays/days off. Settings: ${settingsLine()}.`;
   }
@@ -405,15 +503,23 @@ export function initCalculator() {
       `${n.toLocaleString()} working ${n === 1 ? 'day' : 'days'} ${dir} ${formatLongDate(r.start)}` +
       ` (${Math.abs(r.calendarDays).toLocaleString()} calendar ${Math.abs(r.calendarDays) === 1 ? 'day' : 'days'}).`;
     setStatus(main, sub, true);
+    els.note.textContent = 'The start date isn’t counted: 1 working day after a Friday is the next Monday (with a Sat–Sun weekend).';
     setStats(Math.abs(r.calendarDays), r.weekendDays, deducted(r), n);
     const [from, to] = r.days < 0 ? [r.result, r.start] : [r.start, r.result];
     renderHolidayList(r.days === 0 ? [] : holidaysBetween(all, from, to).filter((h) => h.date !== r.start));
     summary = `${main}: ${sub} Settings: ${settingsLine()}.`;
   }
 
-  function formatDayBefore(iso: string) {
+  function shiftDay(iso: string, days: number) {
     const d = parseISODate(iso)!;
-    return new Date((d - 1) * 86_400_000).toISOString().slice(0, 10);
+    return new Date((d + days) * 86_400_000).toISOString().slice(0, 10);
+  }
+
+  function describeIncluded(start: boolean, end: boolean) {
+    if (start && end) return 'including both dates';
+    if (start) return 'including the start date but not the end date';
+    if (end) return 'including the end date but not the start date';
+    return 'not including either date';
   }
 
   // ---- events ----
@@ -425,8 +531,10 @@ export function initCalculator() {
 
   form.addEventListener('submit', (e) => e.preventDefault());
   for (const r of modeInputs) r.addEventListener('change', changed);
-  for (const el of [els.start, els.end, els.inc, els.op, els.region]) el.addEventListener('change', changed);
+  for (const el of [els.start, els.end, els.incs, els.inc, els.op, els.region]) el.addEventListener('change', changed);
   els.days.addEventListener('input', changed);
+  els.hours.addEventListener('input', changed);
+  els.year.addEventListener('change', () => void renderYear());
   els.start.addEventListener('input', changed);
   els.end.addEventListener('input', changed);
 
@@ -519,6 +627,7 @@ export function initCalculator() {
   els.copyLink.addEventListener('click', () => void copy(shareUrl(), 'Link'));
 
   // ---- start ----
+  yearOptions();
   writeForm();
   document.querySelector('.js-loading')?.remove();
   void updateRegions()
