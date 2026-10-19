@@ -1,8 +1,11 @@
 # Blog review 1
 
-A fact-check of the 10 draft blog posts (5 per site), done on 19 October 2026 on branch
-`blog-review-1`. Every post is still `draft: true`; each now has `updatedDate: 2026-10-19`
-(an optional field in the blog schema). Publishing is left to you.
+A fact-check of the 10 blog posts (5 per site), done on 19 October 2026 on branch
+`blog-review-1`. Each post has `updatedDate: 2026-10-19` (an optional field in the blog schema).
+
+**Status: all 10 posts are published (`draft: false`).** The draft mechanism and `SHOW_DRAFTS`
+are still in the code for future posts. The per-post notes further down say "keep `draft:
+true`"; that was true at review time and has since been changed.
 
 ## How the checking was done
 
@@ -48,19 +51,32 @@ After the first review, you checked the open items by hand. These changes follow
    information icon (to the left of the web address)", matching Google's help. The blog posts
    already used "site information icon".
 
-## Still open
+## Previously open claims: softened or removed before publishing
 
-These are claims kept in the posts in cautious wording, or deliberately left out, that no
-official source confirmed:
+No official source confirmed these six claims, so each was reworded as general guidance or
+removed:
 
-- The "six keys" limit of the USB boot keyboard format came from secondary sources only.
-- Debounce and other chatter fixes are forum advice only, and the post words them cautiously.
-- We found the ISO 9241-307 pixel-fault classes on vendor policy pages, not in the standard
-  itself, so the post states no numbers.
-- Whether macOS needs the browser restarted after changing camera permission.
-- The Windows 11 option to let several apps use the camera, which was left out.
-- No Google page confirms that Sheets' `NETWORKDAYS` returns a negative number for reversed dates,
-  so the post says this only for Excel.
+| Claim | Post | What was done |
+| --- | --- | --- |
+| The USB "boot" keyboard format has room for six keys | `keyboard-ghosting-rollover-chattering-test.md` | Removed the boot-format explanation. It now says "Many ordinary USB keyboards work this way. Check your keyboard's specifications or manual to see what yours supports." |
+| Debounce settings fix chattering | `keyboard-ghosting-rollover-chattering-test.md` | Now says "Some keyboards come with software that may offer a setting to help with this; check your keyboard's manual or the maker's support site." |
+| ISO 9241-307 pixel fault classes | `dead-pixels-vs-stuck-pixels.md` | Removed. ISO 9241-307 is no longer cited; the post just says to check your manufacturer's pixel policy for your exact model. |
+| macOS needs the browser restarted after a camera permission change | `webcam-not-working-in-browser.md` | Now says "you may need to quit and reopen it before the change takes effect." |
+| Windows 11 option to let several apps use the camera | `webcam-not-working-in-browser.md` | Already left out. The post keeps the general "Often only one app can use a webcam at a time." |
+| Sheets returns a negative number for reversed dates | `count-business-days-between-two-dates.md` | The post states this for Excel only and now adds "Other spreadsheet apps may behave differently, so check with a quick test before relying on it." |
+
+## Publishing checks
+
+- All 10 posts are listed on each site's `/blog/` and included in `sitemap.xml`.
+- None has a `noindex` tag.
+- Each post links back to its tool: in the text (for example `/#mic` or `/`) and with "← Back to
+  the …" at the end.
+- Each tool's home page has a **Guides** section linking to 3 posts:
+  - Working Days: counting business days, adding business days, and holidays on weekends.
+  - Device Test: microphone fixes, webcam fixes, and dead vs stuck pixels.
+- The Guides section lists only published posts, so a post switched back to draft drops out
+  instead of leaving a broken link.
+- Playwright tests check all of this on every run (see TESTING.md).
 
 ---
 

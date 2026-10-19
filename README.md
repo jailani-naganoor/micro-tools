@@ -132,6 +132,14 @@ After the custom domain is live:
    same sitemap URL.
 5. Repeat for the second site.
 
+## Blog
+
+Posts are Markdown files in `apps/<site>/src/content/blog/`. All 10 current posts are published
+(`draft: false`). A new post defaults to `draft: true`: it isn't built, listed or put in the
+sitemap until you set `draft: false`, unless `SHOW_DRAFTS=true` (local `.env` or the Cloudflare
+Pages Preview environment), which shows drafts with a "Draft" label and `noindex`. Each tool's
+home page lists up to three guides; edit the `RelatedPosts` slugs in `src/pages/index.astro`.
+
 ## Project docs
 
 - [CLAUDE.md](CLAUDE.md): conventions for future work on this repo.

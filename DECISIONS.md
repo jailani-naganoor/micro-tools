@@ -198,6 +198,13 @@ and can be revisited.
     drafts are included, and on Cloudflare Pages it also logs the branch. A unit test builds both
     sites with the variable on and off, using the same npm workspace command Cloudflare runs.
 
+65. **All 10 posts are published** (`draft: false`, October 2026) after the fact-check in
+    BLOG_REVIEW.md. Claims no official source confirmed were reworded as general guidance or
+    removed. The draft mechanism (#34) and `SHOW_DRAFTS` stay for future posts.
+66. **Guides on home pages.** Each tool's home page has a "Guides" section below the FAQ linking to
+    three posts (`RelatedPosts` in `packages/ui`). It only links published posts, so switching a
+    post back to draft removes it from the list instead of leaving a broken link.
+
 ## SEO, privacy and ads
 
 34. **Drafts aren't built at all** in production: no page, no sitemap entry, no link. The blog
