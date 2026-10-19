@@ -3,7 +3,7 @@ title: "How to Count Business Days Between Two Dates"
 description: "Count business days between two dates by hand or with NETWORKDAYS and NETWORKDAYS.INTL in Excel and Google Sheets, including weekends and holidays."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 Counting the business days between two dates comes up all the time: project plans, payroll, delivery promises, leave requests. Small details, such as whether to count the first day, which days are the weekend and which holidays apply, can change the answer. This guide shows how to do it by hand, then how to do it with spreadsheet formulas.
@@ -61,7 +61,7 @@ For the example above, with 02/11/2026 in A1, 27/11/2026 in B1 and 26/11/2026 in
 =NETWORKDAYS(A1, B1, D1)    → 19
 ```
 
-In Excel, if the start date is later than the end date, the result is a negative number.
+In Excel, if the start date is later than the end date, the result is a negative number. Other spreadsheet apps may behave differently, so check with a quick test before relying on it.
 
 Tip: type dates into cells rather than as text inside the formula, because date text can be read differently depending on regional settings.
 

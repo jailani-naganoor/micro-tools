@@ -3,7 +3,7 @@ title: "How to Test a Keyboard for Ghosting, Rollover and Chatter"
 description: "What keyboard ghosting, key rollover (2KRO, 6KRO, NKRO) and chattering mean, and how to check for each with an online keyboard tester."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 A key that doesn't work at all is hard to miss. Other keyboard problems are subtler: some key combinations don't register, or one press types a letter twice. These are known as ghosting, limited rollover and chattering, and you can check for all three in a few minutes with an online keyboard tester.
@@ -13,7 +13,7 @@ A key that doesn't work at all is hard to miss. Other keyboard problems are subt
 Key rollover is the number of keys a keyboard can register correctly when they are held down at the same time.
 
 - **2KRO** means the keyboard reliably registers two keys pressed together. Some basic keyboards only guarantee this, although they may handle more in certain combinations.
-- **6KRO** means up to six regular keys at once, plus modifier keys such as Shift, Ctrl and Alt. The simple USB keyboard format (the "boot" format that also works in a computer's startup menus) has room for six regular keys plus the modifiers, and many USB keyboards stick to that limit.
+- **6KRO** means up to six regular keys at once, plus modifier keys such as Shift, Ctrl and Alt. Many ordinary USB keyboards work this way. Check your keyboard's specifications or manual to see what yours supports.
 - **NKRO** (n-key rollover) means every key can be registered at the same time, however many are pressed.
 
 For normal typing, rollover rarely matters. It matters more in games, where you might hold several keys at once.
@@ -72,7 +72,7 @@ Browsers round event times, so the timing check is a guide rather than a lab mea
 
 ## What to do about problems
 
-- **Chattering:** Turn the keyboard off or unplug it, and blow out debris with compressed air. On a mechanical keyboard with hot-swappable switches, replacing the switch often solves it. Some keyboards' companion software or firmware has a debounce setting that may help. If the keyboard is under warranty, contact the manufacturer.
+- **Chattering:** Turn the keyboard off or unplug it, and blow out debris with compressed air. On a mechanical keyboard with hot-swappable switches, replacing the switch often solves it. Some keyboards come with software that may offer a setting to help with this; check your keyboard's manual or the maker's support site. If the keyboard is under warranty, contact the manufacturer.
 - **Limited rollover:** This is how the keyboard was built, so a setting won't change it in most cases. Some gaming keyboards have an NKRO mode in their software or a key combination to switch it on, so check your keyboard's manual.
 
 ## ANSI vs ISO layouts

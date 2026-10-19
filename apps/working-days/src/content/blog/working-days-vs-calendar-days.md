@@ -3,7 +3,7 @@ title: "Working Days vs Calendar Days in Deadlines"
 description: "How to read deadlines, notice periods and contract terms written in working days or calendar days, and the counting mistakes that catch people out."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 "Reply within 10 days." "Notice of four weeks." "Payment due within 14 working days." Phrases like these look precise, but two people can read them and arrive at different dates, usually because of working days versus calendar days, or whether the first day counts. This guide explains how to read a deadline carefully and where the common traps are.

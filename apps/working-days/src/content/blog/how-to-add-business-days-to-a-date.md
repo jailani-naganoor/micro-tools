@@ -3,7 +3,7 @@ title: "How to Add Business Days to a Date"
 description: "Add business days to a date step by step, with a worked example that includes holidays, plus how this applies to invoice terms and shipping estimates."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 Counting forward a set number of business days sounds easy until a weekend or public holiday gets in the way. For invoice due dates, delivery windows and response deadlines alike, the method is the same: start from the right day, skip the days that do not count, and stop at the number you need.

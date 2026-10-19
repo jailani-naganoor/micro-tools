@@ -3,7 +3,7 @@ title: "Microphone Not Working on Windows or Mac? Try These Fixes"
 description: "Step-by-step fixes for a mic that won't work on Windows 11 or macOS: mute, input device, privacy settings, browser permissions, drivers."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 A microphone that suddenly stops working is frustrating, especially just before a call. The cause is usually simple: a mute switch, the wrong input device, or a permission that has been turned off. This guide walks through the checks in order, quickest first, for Windows 11 and macOS.

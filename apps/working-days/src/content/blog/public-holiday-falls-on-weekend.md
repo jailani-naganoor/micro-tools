@@ -3,7 +3,7 @@ title: "When a Public Holiday Falls on a Weekend"
 description: "How substitute and observed holidays work when a public holiday lands on a Saturday or Sunday, with examples from the US, UK and Australia."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 Fixed-date public holidays, such as Christmas Day, sometimes land on a Saturday or Sunday. Some countries then give a weekday off instead, some do not, and some do it only for certain holidays. If you count working days, this matters: a substitute day removes a working day that would otherwise be available.

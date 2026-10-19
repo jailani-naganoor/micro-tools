@@ -3,7 +3,7 @@ title: "Weekend Days by Country: Patterns Around the World"
 description: "Saturday–Sunday, Friday–Saturday and Sunday-only weekends explained, including the UAE's 2022 change, and how they affect international deadlines."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 If you only ever work with people in one country, "the weekend" needs no explanation. As soon as you deal with suppliers, colleagues or clients abroad, it becomes a real planning question. Not everyone takes Saturday and Sunday off, and a deadline of "five working days" can mean a different date depending on whose working week you use.

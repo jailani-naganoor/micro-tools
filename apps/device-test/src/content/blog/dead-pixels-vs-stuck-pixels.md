@@ -3,7 +3,7 @@ title: "Dead Pixels vs Stuck Pixels: How to Tell and What to Do"
 description: "The difference between dead and stuck pixels, how to find them with full-screen colour tests, and what may help a stuck pixel."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 A tiny dot on your screen that never changes can be distracting, especially on a new monitor or laptop. Dead pixels and stuck pixels look similar at first, but they behave differently, and one is more likely to be fixable than the other.
@@ -70,7 +70,7 @@ There is no reliable home fix for a truly dead pixel. If it bothers you, the rea
 
 ## Check the manufacturer's pixel policy
 
-Many display and laptop makers publish a pixel policy that explains how many faulty pixels, of which type and in which part of the screen, count as a defect under warranty. Some base theirs on the ISO 9241-307 standard, which groups faults into bright pixels, dark pixels and faulty subpixels and sets "pixel fault classes" for how many of each are allowed per million pixels. Policies differ between brands and sometimes between product lines, so check the policy for your exact model on the manufacturer's website.
+Many display and laptop makers publish a pixel policy that explains how many faulty pixels, of which type and in which part of the screen, count as a defect under warranty. Policies differ between brands and sometimes between product lines, so check the policy for your exact model on the manufacturer's website.
 
 If you have just bought the screen, check the shop's return policy too.
 

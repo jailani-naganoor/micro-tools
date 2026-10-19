@@ -3,7 +3,7 @@ title: "Webcam Not Working in Your Browser? How to Fix It"
 description: "Fix a webcam that won't work in Chrome, Edge, Firefox or Safari: site permissions, Windows and macOS camera privacy, HTTPS and apps using the camera."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 Your webcam works in one app, but a website shows a black box or says no camera was found. When a camera fails only in the browser, the cause is almost always a permission setting at one of two levels: the browser's permission for that site, or the operating system's permission for the browser. This guide covers both, plus a few other common causes.
@@ -70,7 +70,7 @@ You can also check that Windows sees the camera in **Settings > Bluetooth & devi
 
 1. Open **System Settings > Privacy & Security > Camera**.
 2. Turn on the switch next to your browser.
-3. If the browser was already open, quit and reopen it.
+3. If the browser was already open, you may need to quit and reopen it before the change takes effect.
 
 If your browser is not in the list, it has not asked for access yet. Visit a site that uses the camera and the request should appear.
 

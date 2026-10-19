@@ -3,7 +3,7 @@ title: "Why Is My Webcam Blurry? Common Causes and Fixes"
 description: "Why a webcam looks blurry or grainy, and how to fix it: lens cleaning, lighting, focus, browser resolution, bandwidth and USB ports."
 pubDate: 2026-10-18
 updatedDate: 2026-10-19
-draft: true
+draft: false
 ---
 
 A blurry or grainy webcam picture doesn't always mean the camera is poor. Often the real cause is lighting, a dirty lens, or the resolution a website or app has chosen. This guide explains the most common reasons a webcam looks low quality and what you can do about each one.
